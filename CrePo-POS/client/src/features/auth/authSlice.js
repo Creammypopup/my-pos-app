@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
+import { ALL_PERMISSIONS } from '../../permissions'; // Import all permissions
 
 const user = JSON.parse(localStorage.getItem('user'));
 
 const initialState = {
   user: user ? user : null,
-  permissions: user?.role?.permissions || [],
+  permissions: user?.role?.name === 'Admin' ? ALL_PERMISSIONS.map(p => p.id) : (user?.role?.permissions || []),
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -16,14 +17,17 @@ const initialState = {
 export const register = createAsyncThunk('auth/register', async (userData, thunkAPI) => {
     try { return await authService.register(userData); } catch (error) { return thunkAPI.rejectWithValue(error.response.data.message || error.message); }
 });
+
 export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) => {
     try { return await authService.login(userData); } catch (error) { return thunkAPI.rejectWithValue(error.response.data.message || error.message); }
 });
+
 export const logout = createAsyncThunk('auth/logout', async () => { await authService.logout(); });
 
 export const getMe = createAsyncThunk('auth/getMe', async (_, thunkAPI) => {
     try {
-        return await authService.getMe();
+        const token = thunkAPI.getState().auth.user.token;
+        return await authService.getMe(token);
     } catch (error) {
         const message = (error.response?.data?.message) || error.message || error.toString();
         thunkAPI.dispatch(logout());
@@ -52,7 +56,10 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.user = action.payload;
-        state.permissions = action.payload?.role?.permissions || [];
+        // If user is Admin, grant all permissions, otherwise use permissions from payload
+        state.permissions = action.payload?.role?.name === 'Admin' 
+            ? ALL_PERMISSIONS.map(p => p.id) 
+            : action.payload?.role?.permissions || [];
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -70,12 +77,15 @@ export const authSlice = createSlice({
       .addCase(getMe.fulfilled, (state, action) => {
           state.isAuthLoading = false;
           state.user = action.payload;
-          state.permissions = action.payload?.role?.permissions || [];
+          state.permissions = action.payload?.role?.name === 'Admin'
+            ? ALL_PERMISSIONS.map(p => p.id)
+            : action.payload?.role?.permissions || [];
       })
       .addCase(getMe.rejected, (state, action) => {
           state.isAuthLoading = false;
           state.user = null;
           state.permissions = [];
+          localStorage.removeItem('user'); // Clean up on failure
       });
   },
 });

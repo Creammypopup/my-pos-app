@@ -28,7 +28,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 });
 
 const createProduct = asyncHandler(async (req, res) => {
-    const { name, sku, category, description, quantity, lowStockThreshold, units } = req.body;
+    const { name, sku, category, description, quantity, lowStockThreshold, units, productType, bundledItems } = req.body;
 
     if (!units || units.length === 0) {
         res.status(400);
@@ -43,6 +43,8 @@ const createProduct = asyncHandler(async (req, res) => {
       quantity,
       lowStockThreshold,
       units,
+      productType,
+      bundledItems,
       user: req.user._id,
     });
     
@@ -51,7 +53,7 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, sku, category, description, quantity, lowStockThreshold, units } = req.body;
+  const { name, sku, category, description, quantity, lowStockThreshold, units, productType, bundledItems } = req.body;
   
   const product = await Product.findById(req.params.id);
 
@@ -63,6 +65,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.quantity = quantity ?? product.quantity;
     product.lowStockThreshold = lowStockThreshold ?? product.lowStockThreshold;
     product.units = units ?? product.units;
+    product.productType = productType ?? product.productType;
+    product.bundledItems = bundledItems ?? product.bundledItems;
+
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);

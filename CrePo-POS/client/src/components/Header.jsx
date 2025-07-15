@@ -9,11 +9,10 @@ function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { settings } = useSelector((state) => state.settings); // ดึงข้อมูล settings
+  const { settings, isLoading } = useSelector((state) => state.settings);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
-    // ดึงข้อมูล settings เมื่อ component โหลด
     if (user) {
       dispatch(getSettings());
     }
@@ -21,6 +20,7 @@ function Header() {
 
   const onLogout = () => {
     dispatch(logout());
+    setDropdownOpen(false);
     navigate('/login');
   };
 
@@ -30,9 +30,8 @@ function Header() {
 
   return (
     <header className='flex items-center justify-between w-full p-4 bg-content-bg border-b border-border-color'>
-      {/* แสดงชื่อร้านค้าจาก settings */}
       <h1 className='text-xl font-semibold text-text-primary'>
-        {settings?.storeName || 'ยินดีต้อนรับ'}
+        {isLoading ? '...' : (settings?.storeName || 'ยินดีต้อนรับ')}
       </h1>
 
       <div className="flex items-center gap-4">
@@ -48,7 +47,7 @@ function Header() {
             <span className='text-text-primary font-semibold hidden md:block'>{user.name}</span>
           </button>
           {dropdownOpen && (
-            <div className='absolute right-0 w-48 mt-2 bg-white rounded-xl shadow-lifted z-10 overflow-hidden'>
+            <div className='absolute right-0 w-48 mt-2 bg-white rounded-xl shadow-lifted z-10 overflow-hidden animate-fade-in-fast'>
               <a href='#' className='block px-4 py-2 text-sm text-text-secondary hover:bg-gray-100'>
                 โปรไฟล์
               </a>

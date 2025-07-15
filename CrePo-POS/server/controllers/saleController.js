@@ -1,10 +1,8 @@
 import asyncHandler from 'express-async-handler';
 import Sale from '../models/Sale.js';
 import Product from '../models/Product.js';
+import mongoose from 'mongoose';
 
-// @desc    Create new sale
-// @route   POST /api/sales
-// @access  Private
 const createSale = asyncHandler(async (req, res) => {
   const { items, customer, subtotal, discount, total, paymentMethod } = req.body;
 
@@ -13,26 +11,44 @@ const createSale = asyncHandler(async (req, res) => {
     throw new Error('ไม่มีรายการสินค้าในการขาย');
   }
 
-  // Use a transaction to ensure atomicity
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
 
     for (const item of items) {
-      const product = await Product.findById(item.product).session(session);
+      const product = await Product.findById(item.productId).session(session);
       if (!product) {
         throw new Error(`ไม่พบสินค้า: ${item.name}`);
       }
-      if (product.quantity < item.qty) {
-        throw new Error(`สินค้า '${product.name}' มีไม่พอ (เหลือ ${product.quantity} ${product.unit})`);
+
+      const conversionRate = item.unit.conversionRate || 1;
+      const quantityToDeduct = item.qty * conversionRate;
+      
+      if (product.productType === 'standard') {
+        if (product.quantity < quantityToDeduct) {
+          throw new Error(`สินค้า '${product.name}' มีไม่พอ (เหลือ ${product.quantity} ${product.units[0].name})`);
+        }
+        product.quantity -= quantityToDeduct;
+        await product.save({ session });
+      } else if (product.productType === 'bundle') {
+        for (const bundledItem of product.bundledItems) {
+            const subProduct = await Product.findById(bundledItem.product).session(session);
+            if (!subProduct) {
+                throw new Error(`ไม่พบสินค้าส่วนประกอบในเซ็ต: ${bundledItem.product}`);
+            }
+            const subProductQtyToDeduct = bundledItem.quantity * item.qty;
+            if(subProduct.quantity < subProductQtyToDeduct) {
+                throw new Error(`สินค้าส่วนประกอบ '${subProduct.name}' ในเซ็ต '${product.name}' มีไม่พอ`);
+            }
+            subProduct.quantity -= subProductQtyToDeduct;
+            await subProduct.save({session});
+        }
       }
-      product.quantity -= item.qty;
-      await product.save({ session });
     }
     
     const sale = new Sale({
       user: req.user._id,
-      items,
+      items: items.map(i => ({ product: i.productId, name: i.name, qty: i.qty, price: i.price })),
       customer,
       subtotal,
       discount,
@@ -44,25 +60,20 @@ const createSale = asyncHandler(async (req, res) => {
 
     await session.commitTransaction();
     session.endSession();
-
-    // Populate customer details for the response
+    
     const populatedSale = await Sale.findById(createdSale._id).populate('customer', 'name');
-
     res.status(201).json(populatedSale);
 
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    res.status(400); // Bad request for inventory issues or other errors
+    res.status(400);
     throw new Error(error.message || 'ไม่สามารถบันทึกการขายได้');
   }
 });
 
-// @desc    Get all sales
-// @route   GET /api/sales
-// @access  Private
 const getSales = asyncHandler(async (req, res) => {
-    const sales = await Sale.find({}).populate('user', 'name').populate('customer', 'name');
+    const sales = await Sale.find({}).populate('user', 'name').populate('customer', 'name').sort({ createdAt: -1 });
     res.json(sales);
 });
 
@@ -76,6 +87,5 @@ const getSaleById = asyncHandler(async (req, res) => {
     throw new Error('Sale not found');
   }
 });
-
 
 export { createSale, getSales, getSaleById };

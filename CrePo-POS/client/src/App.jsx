@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { getMe, stopAuthLoading } from './features/auth/authSlice';
 
 import PrivateRoute from './components/PrivateRoute';
+import PermissionRoute from './components/PermissionRoute';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import LoginPage from './pages/LoginPage';
@@ -17,12 +20,11 @@ import UsersPage from './pages/settings/UsersPage';
 import RolesPage from './pages/settings/RolesPage';
 import ThemePage from './pages/settings/ThemePage';
 import PlaceholderPage from './components/PlaceholderPage';
-import SalesHistoryPage from './pages/SalesHistoryPage'; // <-- แก้ไข: ใช้หน้านี้จริง
+import SalesHistoryPage from './pages/SalesHistoryPage';
 
-// --- Import ไอคอนสำหรับหน้า Placeholder ---
-import { 
-  FaFileSignature, FaFileInvoice, FaReceipt, FaShoppingCart, FaWallet, 
-  FaBox, FaUserTie, FaMoneyCheckAlt, FaBook, FaChartPie, 
+import {
+  FaFileSignature, FaFileInvoice, FaReceipt, FaShoppingCart, FaWallet,
+  FaBox, FaUserTie, FaMoneyCheckAlt, FaBook, FaChartPie,
   FaWarehouse, FaTools, FaChartBar, FaCalendarAlt
 } from 'react-icons/fa';
 
@@ -39,6 +41,21 @@ const MainLayout = ({ children }) => (
 );
 
 function App() {
+  const dispatch = useDispatch();
+  const { user, isAuthLoading } = useSelector(state => state.auth);
+
+  useEffect(() => {
+    if (localStorage.getItem('user')) {
+      dispatch(getMe());
+    } else {
+      dispatch(stopAuthLoading());
+    }
+  }, [dispatch]);
+
+  if (isAuthLoading) {
+    return <div>Loading Application...</div>;
+  }
+  
   return (
     <>
       <Router>
@@ -46,45 +63,38 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
 
           <Route element={<PrivateRoute />}>
-            <Route path="/" element={<MainLayout><Dashboard /></MainLayout>} />
-            <Route path="/pos" element={<MainLayout><PosPage /></MainLayout>} />
+            <Route path="/" element={<MainLayout><PermissionRoute permission="dashboard-view"><Dashboard /></PermissionRoute></MainLayout>} />
+            <Route path="/pos" element={<MainLayout><PermissionRoute permission="pos-access"><PosPage /></PermissionRoute></MainLayout>} />
             
-            {/* Sales Routes */}
-            <Route path="/sales-history" element={<MainLayout><SalesHistoryPage /></MainLayout>} />
-            <Route path="/quotations" element={<MainLayout><PlaceholderPage title="ใบเสนอราคา" icon={<FaFileSignature />} /></MainLayout>} />
-            <Route path="/invoices" element={<MainLayout><PlaceholderPage title="ใบแจ้งหนี้/ใบกำกับ" icon={<FaFileInvoice />} /></MainLayout>} />
-            <Route path="/receipts" element={<MainLayout><PlaceholderPage title="ใบเสร็จรับเงิน" icon={<FaReceipt />} /></MainLayout>} />
+            <Route path="/sales-history" element={<MainLayout><PermissionRoute permission="sales-docs-view"><SalesHistoryPage /></PermissionRoute></MainLayout>} />
+            <Route path="/quotations" element={<MainLayout><PermissionRoute permission="quotations-manage"><PlaceholderPage title="ใบเสนอราคา" icon={<FaFileSignature />} /></PermissionRoute></MainLayout>} />
+            <Route path="/invoices" element={<MainLayout><PermissionRoute permission="invoices-manage"><PlaceholderPage title="ใบแจ้งหนี้/ใบกำกับ" icon={<FaFileInvoice />} /></PermissionRoute></MainLayout>} />
+            <Route path="/receipts" element={<MainLayout><PermissionRoute permission="receipts-manage"><PlaceholderPage title="ใบเสร็จรับเงิน" icon={<FaReceipt />} /></PermissionRoute></MainLayout>} />
 
-            {/* Purchase Routes */}
-            <Route path="/purchase-orders" element={<MainLayout><PlaceholderPage title="ใบสั่งซื้อ" icon={<FaShoppingCart />} /></MainLayout>} />
-            <Route path="/expenses" element={<MainLayout><PlaceholderPage title="บันทึกค่าใช้จ่าย" icon={<FaWallet />} /></MainLayout>} />
-            <Route path="/bills" element={<MainLayout><PlaceholderPage title="ใบรับสินค้า" icon={<FaBox />} /></MainLayout>} />
+            <Route path="/purchase-orders" element={<MainLayout><PermissionRoute permission="purchase-orders-manage"><PlaceholderPage title="ใบสั่งซื้อ" icon={<FaShoppingCart />} /></PermissionRoute></MainLayout>} />
+            <Route path="/expenses" element={<MainLayout><PermissionRoute permission="expenses-manage"><PlaceholderPage title="บันทึกค่าใช้จ่าย" icon={<FaWallet />} /></PermissionRoute></MainLayout>} />
+            <Route path="/bills" element={<MainLayout><PermissionRoute permission="purchase-docs-view"><PlaceholderPage title="ใบรับสินค้า" icon={<FaBox />} /></PermissionRoute></MainLayout>} />
             
-            {/* Inventory Routes */}
-            <Route path="/products" element={<MainLayout><ProductsPage /></MainLayout>} />
-            <Route path="/inventory" element={<MainLayout><PlaceholderPage title="ภาพรวมคลังสินค้า" icon={<FaWarehouse />} /></MainLayout>} />
-            <Route path="/stock-adjustments" element={<MainLayout><PlaceholderPage title="ปรับสต็อก" icon={<FaTools />} /></MainLayout>} />
+            <Route path="/products" element={<MainLayout><PermissionRoute permission="products-view"><ProductsPage /></PermissionRoute></MainLayout>} />
+            <Route path="/inventory" element={<MainLayout><PermissionRoute permission="stock-adjustments-manage"><PlaceholderPage title="ภาพรวมคลังสินค้า" icon={<FaWarehouse />} /></PermissionRoute></MainLayout>} />
+            <Route path="/stock-adjustments" element={<MainLayout><PermissionRoute permission="stock-adjustments-manage"><PlaceholderPage title="ปรับสต็อก" icon={<FaTools />} /></PermissionRoute></MainLayout>} />
 
-            {/* Other Main Routes */}
-            <Route path="/contacts" element={<MainLayout><ContactsPage /></MainLayout>} />
+            <Route path="/contacts" element={<MainLayout><PermissionRoute permission="contacts-manage"><ContactsPage /></PermissionRoute></MainLayout>} />
             <Route path="/calendar" element={<MainLayout><PlaceholderPage title="ปฏิทิน" icon={<FaCalendarAlt />} /></MainLayout>} />
-            <Route path="/reports" element={<MainLayout><PlaceholderPage title="รายงาน" icon={<FaChartBar />} /></MainLayout>} />
+            <Route path="/reports" element={<MainLayout><PermissionRoute permission="reports-view"><PlaceholderPage title="รายงาน" icon={<FaChartBar />} /></PermissionRoute></MainLayout>} />
 
-            {/* Employee Routes */}
             <Route path="/employees" element={<MainLayout><PlaceholderPage title="ข้อมูลพนักงาน" icon={<FaUserTie />} /></MainLayout>} />
             <Route path="/payroll" element={<MainLayout><PlaceholderPage title="เงินเดือน" icon={<FaMoneyCheckAlt />} /></MainLayout>} />
 
-            {/* Accounting Routes */}
-            <Route path="/chart-of-accounts" element={<MainLayout><PlaceholderPage title="ผังบัญชี" icon={<FaBook />} /></MainLayout>} />
-            <Route path="/journal" element={<MainLayout><PlaceholderPage title="สมุดรายวัน" icon={<FaChartPie />} /></MainLayout>} />
+            <Route path="/chart-of-accounts" element={<MainLayout><PermissionRoute permission="chart-of-accounts-manage"><PlaceholderPage title="ผังบัญชี" icon={<FaBook />} /></PermissionRoute></MainLayout>} />
+            <Route path="/journal" element={<MainLayout><PermissionRoute permission="journal-manage"><PlaceholderPage title="สมุดรายวัน" icon={<FaChartPie />} /></PermissionRoute></MainLayout>} />
             
-            {/* Settings Route */}
-            <Route path="/settings" element={<MainLayout><SettingsLayout /></MainLayout>}>
-              <Route index element={<GeneralPage />} />
-              <Route path="general" element={<GeneralPage />} />
-              <Route path="users" element={<UsersPage />} />
-              <Route path="roles" element={<RolesPage />} />
-              <Route path="theme" element={<ThemePage />} />
+            <Route path="/settings" element={<MainLayout><PermissionRoute permission="settings-access"><SettingsLayout /></PermissionRoute></MainLayout>}>
+              <Route index element={<PermissionRoute permission="general-settings-manage"><GeneralPage /></PermissionRoute>} />
+              <Route path="general" element={<PermissionRoute permission="general-settings-manage"><GeneralPage /></PermissionRoute>} />
+              <Route path="users" element={<PermissionRoute permission="users-manage"><UsersPage /></PermissionRoute>} />
+              <Route path="roles" element={<PermissionRoute permission="roles-manage"><RolesPage /></PermissionRoute>} />
+              <Route path="theme" element={<PermissionRoute permission="theme-settings-manage"><ThemePage /></PermissionRoute>} />
             </Route>
           </Route>
         </Routes>

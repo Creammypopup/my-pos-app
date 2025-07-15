@@ -6,15 +6,25 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'fade-in-fast': 'fadeIn 0.2s ease-in-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
       colors: {
-        'primary-light': '#E9D5FF',   // ม่วงอ่อนมาก
-        'primary-main': '#C084FC',    // ม่วงพาสเทลหลัก
-        'primary-dark': '#A855F7',    // ม่วงเข้ม (สำหรับปุ่ม หรือ active)
-        'primary-text': '#581C87',    // ตัวอักษรม่วงเข้ม
+        'primary-light': '#E9D5FF',   
+        'primary-main': '#C084FC',    
+        'primary-dark': '#A855F7',    
+        'primary-text': '#581C87',    
 
-        'bg-main': '#F5F3FF',         // พื้นหลังหลัก (ม่วงอ่อนมากๆๆ)
-        'sidebar-bg': '#FFFFFF',      // พื้นหลัง Sidebar
-        'content-bg': '#FFFFFF',      // พื้นหลังของเนื้อหา
+        'bg-main': '#F5F3FF',        
+        'sidebar-bg': '#F9F7FF', // สีอ่อนลงตามที่ขอ
+        'content-bg': '#FFFFFF',     
 
         'accent-pink': '#F472B6',
         'accent-sky': '#38BDF8',
@@ -23,9 +33,9 @@ export default {
         'accent-red': '#F87171',
         'accent-yellow': '#FBBF24',
         
-        'text-primary': '#1E293B',    // สีเทาเข้ม
-        'text-secondary': '#64748B',  // สีเทา
-        'border-color': '#E2E8F0',    // สีเส้นขอบ (อ่อนลง)
+        'text-primary': '#1E293B',
+        'text-secondary': '#64748B',
+        'border-color': '#E2E8F0', 
       },
       fontFamily: {
         'sans': ['Sarabun', 'sans-serif'],

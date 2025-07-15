@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 function GeneralPage() {
   const dispatch = useDispatch();
-  const { settings, isLoading, isError, message, isSuccess } = useSelector((state) => state.settings);
+  const { settings, isLoading, isError, message } = useSelector((state) => state.settings);
   
   const [formData, setFormData] = useState({
     storeName: '',
@@ -14,7 +14,10 @@ function GeneralPage() {
     storeTaxId: '',
   });
 
-  // เมื่อ component โหลด หรือ settings เปลี่ยนแปลง, ให้อัปเดต form
+  useEffect(() => {
+    dispatch(getSettings());
+  }, [dispatch]);
+  
   useEffect(() => {
     if (settings) {
       setFormData({
@@ -25,25 +28,13 @@ function GeneralPage() {
       });
     }
   }, [settings]);
-  
-  // ดึงข้อมูล settings ครั้งแรก
-  useEffect(() => {
-    dispatch(getSettings());
-  }, [dispatch]);
 
-  // จัดการ Error และ Success message
   useEffect(() => {
     if (isError) {
       toast.error(message);
       dispatch(reset());
     }
-    if (isSuccess) {
-      // isSuccess จะถูก set เป็น true หลังจากการ update สำเร็จ
-      // เราสามารถใช้มันเพื่อแสดง toast หรือทำอย่างอื่นได้
-      // แต่ตอนนี้เราจะ reset มันหลังแสดง toast
-      dispatch(reset());
-    }
-  }, [isError, isSuccess, message, dispatch]);
+  }, [isError, message, dispatch]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -58,6 +49,9 @@ function GeneralPage() {
       .unwrap()
       .then(() => {
         toast.success('บันทึกข้อมูลร้านค้าสำเร็จ!');
+        // After successful update, fetch the latest settings again
+        // This will update the redux store and cause the Header to re-render
+        dispatch(getSettings());
       })
       .catch((err) => {
         toast.error(err.message || 'เกิดข้อผิดพลาดในการบันทึก');
@@ -86,7 +80,7 @@ function GeneralPage() {
             <input type="text" id="storeTaxId" name="storeTaxId" value={formData.storeTaxId} onChange={onChange} className="mt-1 block w-full px-4 py-2 border border-border-color rounded-lg focus:ring-primary-main focus:border-primary-main" />
           </div>
           <div className="text-right pt-4">
-            <button type="submit" disabled={isLoading} className="px-6 py-2.5 bg-primary-main text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark disabled:bg-gray-400 transition-colors">
+            <button type="submit" disabled={isLoading} className="px-6 py-2.5 bg-primary-dark text-white font-semibold rounded-lg shadow-md hover:bg-primary-main disabled:bg-gray-400 transition-colors">
               {isLoading ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}
             </button>
           </div>

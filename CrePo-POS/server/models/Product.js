@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+// โครงสร้างสำหรับแต่ละหน่วยของสินค้า
 const unitDefinitionSchema = new mongoose.Schema({
   name: { type: String, required: true }, // เช่น 'ชิ้น', 'โหล', 'ลัง'
   price: { type: Number, required: true },
@@ -19,30 +20,40 @@ const productSchema = mongoose.Schema(
     description: { type: String },
     image: { type: String, default: '/images/sample.jpg' },
     
+    // ประเภทสินค้า: standard, bundle, service, weighted
+    productType: { 
+        type: String, 
+        required: true, 
+        enum: ['standard', 'bundle', 'service', 'weighted'], 
+        default: 'standard' 
+    },
+
     // เก็บสต็อกในหน่วยที่เล็กที่สุด (base unit) เสมอ
     quantity: { type: Number, required: true, default: 0 },
     lowStockThreshold: { type: Number, default: 0 }, // แจ้งเตือนเมื่อสต็อก (หน่วยเล็กสุด) ต่ำกว่าค่านี้
     
     // โครงสร้างหน่วยใหม่
-    units: [unitDefinitionSchema]
+    units: [unitDefinitionSchema],
+
+    // สำหรับสินค้าจัดเซ็ต (Bundle)
+    bundledItems: [
+        {
+            product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+            quantity: { type: Number } // จำนวนหน่วยเล็กสุดที่ใช้ใน bundle นี้
+        }
+    ]
   },
   { timestamps: true }
 );
 
 // สร้าง SKU อัตโนมัติถ้ายังไม่มี
 productSchema.pre('save', async function (next) {
-  if (this.isModified('sku') || this.sku) return next();
-  
-  const randomSku = `SKU-${Math.floor(100000 + Math.random() * 900000)}`;
-  this.sku = randomSku;
-  
-  // Auto-generate barcode for base unit if not provided
-  if (this.units && this.units.length > 0 && !this.units[0].barcode) {
-      this.units[0].barcode = `${randomSku}-1`;
-  }
-  next();
+    if (this.isNew && !this.sku) {
+        const randomSku = `SKU${Math.floor(100000 + Math.random() * 900000)}`;
+        this.sku = randomSku;
+    }
+    next();
 });
-
 
 const Product = mongoose.model('Product', productSchema);
 export default Product;
