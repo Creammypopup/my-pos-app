@@ -5,7 +5,8 @@ import roleReducer from '../features/role/roleSlice';
 import userReducer from '../features/user/userSlice';
 import contactReducer from '../features/contact/contactSlice';
 import saleReducer from '../features/sale/saleSlice';
-import settingReducer from '../features/setting/settingSlice'; // <-- Import
+import settingReducer from '../features/setting/settingSlice';
+import uiReducer from '../features/ui/uiSlice'; // <-- 1. Import เข้ามา
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     users: userReducer,
     contacts: contactReducer,
     sales: saleReducer,
-    settings: settingReducer, // <-- Add reducer
+    settings: settingReducer,
+    ui: uiReducer, // <-- 2. เพิ่ม uiReducer เข้าไปใน store
   },
 });

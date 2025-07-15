@@ -1,77 +1,74 @@
 import React from 'react';
-import { FaArrowUp, FaArrowDown, FaExclamationTriangle, FaFileInvoice, FaBell } from 'react-icons/fa';
+import { FaArrowUp, FaArrowDown, FaExclamationTriangle, FaFileInvoice, FaDollarSign, FaShoppingCart, FaChartLine, FaWallet } from 'react-icons/fa';
 
-const StatCard = ({ title, value, change, changeType, children }) => (
-  <div className="bg-white p-5 rounded-xl shadow-md flex flex-col justify-between">
+// Card สรุปข้อมูล
+const StatCard = ({ title, value, change, changeType, icon, color }) => (
+  <div className="bg-content-bg p-5 rounded-2xl shadow-main flex items-start justify-between">
     <div>
-      <p className="text-sm font-medium text-gray-500">{title}</p>
-      <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
+      <p className="text-sm font-medium text-text-secondary">{title}</p>
+      <p className="text-3xl font-bold text-text-primary mt-1">{value}</p>
+      {change && (
+        <div className={`mt-2 flex items-center text-xs ${changeType === 'profit' ? 'text-accent-green' : 'text-accent-red'}`}>
+          {changeType === 'profit' ? <FaArrowUp className="mr-1" /> : <FaArrowDown className="mr-1" />}
+          <span>{change}</span>
+        </div>
+      )}
     </div>
-    {change && (
-      <div className={`mt-2 flex items-center text-sm ${changeType === 'profit' ? 'text-green-500' : 'text-red-500'}`}>
-        {changeType === 'profit' ? <FaArrowUp className="mr-1" /> : <FaArrowDown className="mr-1" />}
-        <span>{change}</span>
-      </div>
-    )}
-    {children}
+    <div className={`p-3 rounded-full ${color}`}>
+      {icon}
+    </div>
   </div>
 );
 
 const Dashboard = () => {
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      <h1 className="text-3xl font-bold text-purple-800 mb-6">ภาพรวมธุรกิจ</h1>
+    <div className="animate-fade-in">
+      {/* Header */}
+      <h1 className="text-3xl font-bold text-brand-dark mb-6">ภาพรวมธุรกิจ</h1>
 
       {/* Sales and Profit Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard title="ยอดขายวันนี้" value="฿ 1,250.00" change="กำไร ฿ 450.00" changeType="profit" />
-        <StatCard title="ยอดขายเดือนนี้" value="฿ 35,700.00" change="กำไร ฿ 12,300.00" changeType="profit" />
-        <StatCard title="ยอดขายปีนี้" value="฿ 450,200.00" change="กำไร ฿ 180,500.00" changeType="profit" />
-        <StatCard title="ทุนคงเหลือ" value="฿ 85,000.00" />
+        <StatCard 
+          title="ยอดขายวันนี้" 
+          value="฿ 1,250" 
+          change="+15% จากเมื่อวาน" 
+          changeType="profit" 
+          icon={<FaDollarSign className="text-white"/>}
+          color="bg-accent-green"
+        />
+        <StatCard 
+          title="ยอดขายเดือนนี้" 
+          value="฿ 35,700" 
+          change="+8% จากเดือนก่อน" 
+          changeType="profit"
+          icon={<FaShoppingCart className="text-white"/>}
+          color="bg-sky-500"
+        />
+        <StatCard 
+          title="กำไรเดือนนี้" 
+          value="฿ 12,300" 
+          change="-2% จากเดือนก่อน" 
+          changeType="loss"
+          icon={<FaChartLine className="text-white"/>}
+          color="bg-amber-500"
+        />
+        <StatCard 
+          title="ค่าใช้จ่าย" 
+          value="฿ 8,500"
+          icon={<FaWallet className="text-white"/>}
+          color="bg-accent-red"
+        />
       </div>
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Expenses */}
-          <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">สรุปค่าใช้จ่าย</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <p className="text-gray-600">ค่าเช่า</p>
-                <p className="font-semibold text-red-600">฿ 15,000.00</p>
-              </div>
-              <div className="flex justify-between items-center">
-                <p className="text-gray-600">เงินเดือน</p>
-                <p className="font-semibold text-red-600">฿ 30,000.00</p>
-              </div>
-              <div className="flex justify-between items-center">
-                <p className="text-gray-600">ค่าการตลาด</p>
-                <p className="font-semibold text-red-600">฿ 5,000.00</p>
-              </div>
-              <hr/>
-              <div className="flex justify-between items-center text-lg">
-                <p className="font-bold text-gray-800">รวม (เดือนนี้)</p>
-                <p className="font-bold text-red-700">฿ 50,000.00</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Debtors & Creditors */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">ลูกหนี้ (ใกล้ถึง/เลยกำหนด)</h2>
-              <ul className="space-y-2 text-sm">
-                <li className="flex justify-between text-red-600"><span>บจก. ตัวอย่าง</span><span>฿ 5,400.00</span></li>
-                <li className="flex justify-between text-yellow-600"><span>คุณสมชาย</span><span>฿ 1,200.00</span></li>
-              </ul>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">เจ้าหนี้ (ใกล้ถึง/เลยกำหนด)</h2>
-              <ul className="space-y-2 text-sm">
-                <li className="flex justify-between text-blue-600"><span>บจก. ผู้ผลิต</span><span>฿ 25,000.00</span></li>
-              </ul>
+          {/* Sales Chart (Placeholder) */}
+          <div className="bg-content-bg p-6 rounded-2xl shadow-main">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">กราฟยอดขาย (7 วันล่าสุด)</h2>
+            <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+              <p className="text-text-secondary">Chart will be here</p>
             </div>
           </div>
         </div>
@@ -79,20 +76,25 @@ const Dashboard = () => {
         {/* Right Column */}
         <div className="space-y-8">
           {/* Low Stock */}
-          <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center"><FaExclamationTriangle className="text-yellow-500 mr-2"/>สินค้าใกล้หมด</h2>
-            <ul className="space-y-2 text-sm">
-                <li className="flex justify-between"><span>ครีมกันแดด</span><span className="font-bold">3 ชิ้น</span></li>
-                <li className="flex justify-between"><span>เซรั่มวิตซี</span><span className="font-bold">5 ชิ้น</span></li>
+          <div className="bg-content-bg p-6 rounded-2xl shadow-main">
+            <h2 className="text-xl font-semibold text-text-primary mb-4 flex items-center">
+              <FaExclamationTriangle className="text-accent-yellow mr-2"/>สินค้าใกล้หมด
+            </h2>
+            <ul className="space-y-3 text-sm">
+                <li className="flex justify-between"><span>ครีมกันแดด</span><span className="font-bold text-accent-red">เหลือ 3 ชิ้น</span></li>
+                <li className="flex justify-between"><span>เซรั่มวิตซี</span><span className="font-bold text-accent-red">เหลือ 5 ชิ้น</span></li>
+                 <li className="flex justify-between"><span>ลิปสติก</span><span className="font-bold text-accent-yellow">เหลือ 12 ชิ้น</span></li>
             </ul>
           </div>
 
           {/* Pending Status */}
-          <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center"><FaFileInvoice className="text-blue-500 mr-2"/>สถานะเอกสาร</h2>
-             <ul className="space-y-2 text-sm">
-                <li className="flex justify-between"><span>รออนุมัติ</span><span className="font-bold">2 รายการ</span></li>
-                <li className="flex justify-between"><span>รอจัดส่ง</span><span className="font-bold">5 รายการ</span></li>
+          <div className="bg-content-bg p-6 rounded-2xl shadow-main">
+            <h2 className="text-xl font-semibold text-text-primary mb-4 flex items-center">
+              <FaFileInvoice className="text-sky-500 mr-2"/>สถานะเอกสาร
+            </h2>
+             <ul className="space-y-3 text-sm">
+                <li className="flex justify-between"><span>ใบสั่งซื้อรออนุมัติ</span><span className="font-bold">2</span></li>
+                <li className="flex justify-between"><span>ใบเสนอราคารอส่ง</span><span className="font-bold">5</span></li>
             </ul>
           </div>
         </div>

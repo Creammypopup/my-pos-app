@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'; // <--- เพิ่มบรรทัดนี้
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, reset } from '../features/auth/authSlice';
 import { toast } from 'react-toastify';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiLogIn } from 'react-icons/fi';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -32,28 +32,27 @@ function LoginPage() {
     dispatch(login({ username, password }));
   };
 
-  if (isLoading) {
-    return (
-        <div className='flex items-center justify-center min-h-screen bg-purple-50'>
-            <h1 className='text-2xl text-purple-700'>กำลังโหลด...</h1>
-        </div>
-    );
-  }
-
   return (
-    <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-200 via-pink-200 to-blue-200'>
-      <div className='w-full max-w-sm p-10 space-y-6 bg-white bg-opacity-90 backdrop-blur-lg rounded-2xl shadow-2xl'>
+    <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-violet-200 via-pink-200 to-blue-200 p-4'>
+      <div className='w-full max-w-md p-8 space-y-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lifted'>
         <div className='text-center'>
-          <h2 className='text-3xl font-bold text-gray-800'>
+          <h1 className='text-4xl font-bold text-brand-dark'>
             CrePo-POS
-          </h2>
-          <p className='mt-2 text-sm text-gray-500'>เข้าสู่ระบบเพื่อจัดการร้านค้า</p>
+          </h1>
+          <p className='mt-2 text-text-secondary'>เข้าสู่ระบบเพื่อจัดการร้านค้าของคุณ</p>
         </div>
-        <form onSubmit={submitHandler} className='space-y-6'>
+
+        {isLoading && (
+            <div className='flex justify-center items-center p-4'>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
+            </div>
+        )}
+
+        <form onSubmit={submitHandler} className={`space-y-6 ${isLoading ? 'hidden' : 'block'}`}>
           <div>
             <label
               htmlFor='username'
-              className='block text-sm font-semibold text-gray-700'
+              className='block text-sm font-semibold text-text-secondary mb-1'
             >
               ชื่อผู้ใช้
             </label>
@@ -63,13 +62,13 @@ function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className='w-full px-4 py-3 mt-1 text-gray-700 bg-gray-100 border-2 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400'
+              className='w-full px-4 py-3 text-text-primary bg-white border-2 border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary focus:border-brand-primary transition'
             />
           </div>
           <div className='relative'>
             <label
               htmlFor='password'
-              className='block text-sm font-semibold text-gray-700'
+              className='block text-sm font-semibold text-text-secondary mb-1'
             >
               รหัสผ่าน
             </label>
@@ -79,12 +78,12 @@ function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className='w-full px-4 py-3 mt-1 text-gray-700 bg-gray-100 border-2 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400'
+              className='w-full px-4 py-3 text-text-primary bg-white border-2 border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary focus:border-brand-primary transition'
             />
             <button
               type='button'
               onClick={() => setShowPassword(!showPassword)}
-              className='absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 top-7 hover:text-purple-600'
+              className='absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 top-7 hover:text-brand-primary'
             >
               {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </button>
@@ -92,10 +91,11 @@ function LoginPage() {
           <div>
             <button
               type='submit'
-              className='w-full px-4 py-3 font-bold text-white transition-transform duration-200 transform bg-purple-500 rounded-lg shadow-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 active:scale-95'
+              className='w-full flex justify-center items-center gap-2 px-4 py-4 font-bold text-white transition-all duration-300 transform bg-brand-primary rounded-xl shadow-lg hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary active:scale-95'
               disabled={isLoading}
             >
-              {isLoading ? 'กำลังตรวจสอบ...' : 'เข้าสู่ระบบ'}
+              <FiLogIn />
+              <span>เข้าสู่ระบบ</span>
             </button>
           </div>
         </form>
