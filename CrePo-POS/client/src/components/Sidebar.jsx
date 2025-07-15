@@ -6,13 +6,14 @@ import { logout } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { 
   FaTachometerAlt, FaCashRegister, FaWarehouse, FaUsers, FaChartBar, FaCog, FaSignOutAlt, 
-  FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt
+  FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt, FaHistory
 } from 'react-icons/fa';
 
-// --- โครงสร้างเมนูใหม่ทั้งหมด ---
+// โครงสร้างเมนู (เพิ่มประวัติการขาย)
 const navLinks = [
   { to: '/', icon: <FaTachometerAlt />, text: 'ภาพรวม' },
   { to: '/pos', icon: <FaCashRegister />, text: 'ขายหน้าร้าน' },
+  { to: '/sales-history', icon: <FaHistory />, text: 'ประวัติการขาย' },
   { to: '/calendar', icon: <FaCalendarAlt />, text: 'ปฏิทิน' },
   { 
     text: 'ขาย', 
@@ -67,11 +68,9 @@ const NavItem = ({ item, isExpanded }) => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 
-  // ตรวจสอบว่าเมนูย่อยกำลังถูกใช้งานอยู่หรือไม่
   const isChildActive = item.children ? item.children.some(child => location.pathname.startsWith(child.to)) : false;
 
   useEffect(() => {
-    // เปิดเมนูย่อยค้างไว้ถ้ากำลังใช้งานอยู่
     if (isChildActive) {
       setIsOpen(true);
     }
@@ -147,24 +146,24 @@ function Sidebar() {
 
   return (
     <aside 
-      className={`flex flex-col bg-sidebar-bg border-r border-border-color p-4 transition-all duration-300 ease-in-out ${isSidebarExpanded ? 'w-64' : 'w-24'}`}
+      className={`flex flex-col bg-primary-light border-r border-border-color p-4 transition-all duration-300 ease-in-out ${isSidebarExpanded ? 'w-64' : 'w-24'}`}
     >
-      {/* Header Section */}
       <div className="flex items-center justify-between mb-6 h-14 px-1">
-        <div className={`flex items-center overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'w-full' : 'w-0'}`}>
-          <div className="bg-primary-main p-3 rounded-2xl shadow-lg">
-            <FaFileInvoiceDollar className="text-white text-xl"/>
+        {isSidebarExpanded && (
+          <div className={`flex items-center overflow-hidden transition-all duration-300`}>
+            <div className="bg-primary-main p-3 rounded-2xl shadow-lg">
+              <FaFileInvoiceDollar className="text-white text-xl"/>
+            </div>
           </div>
-        </div>
+        )}
         <button 
           onClick={() => dispatch(toggleSidebar())}
-          className="p-2 text-text-secondary hover:text-primary-text hover:bg-primary-light rounded-lg"
+          className="p-2 text-text-secondary hover:text-primary-text hover:bg-white/50 rounded-lg"
         >
           <FaBars size={20}/>
         </button>
       </div>
 
-      {/* Menu Section */}
       <div className="flex-1 overflow-y-auto scrollbar-hide -mr-2 pr-2">
         <nav>
           <ul className="space-y-2">
@@ -175,8 +174,7 @@ function Sidebar() {
         </nav>
       </div>
 
-      {/* Footer Section */}
-      <div className="border-t border-border-color pt-3 mt-3">
+      <div className="border-t border-purple-200 pt-3 mt-3">
          <button 
            onClick={onLogout}
            className={`flex items-center w-full h-12 text-sm font-medium transition-colors duration-200 text-text-secondary hover:bg-accent-red/10 hover:text-accent-red rounded-xl ${isSidebarExpanded ? 'px-4' : 'justify-center'}`}
