@@ -1,3 +1,4 @@
+import React from 'react'; // <--- เพิ่มบรรทัดนี้
 import { Link, useLocation } from 'react-router-dom';
 import { FaTachometerAlt, FaTh, FaBoxOpen, FaHistory, FaFileInvoiceDollar, FaFileContract, FaFileImport, FaDolly, FaAddressBook, FaChartBar, FaCog } from 'react-icons/fa';
 import { useSelector } from 'react-redux';

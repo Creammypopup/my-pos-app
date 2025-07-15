@@ -43,7 +43,8 @@ export const updateContact = createAsyncThunk('contacts/update', async (contactD
 export const deleteContact = createAsyncThunk('contacts/delete', async (id, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user.token;
-    return await contactService.deleteContact(id, token);
+    await contactService.deleteContact(id, token);
+    return id; // ส่ง id กลับ
   } catch (error) {
     const message = (error.response?.data?.message) || error.message || error.toString();
     return thunkAPI.rejectWithValue(message);
@@ -90,7 +91,8 @@ export const contactSlice = createSlice({
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.contacts = state.contacts.filter((contact) => contact._id !== action.payload.id);
+        // action.payload คือ id ของ contact ที่ถูกลบ
+        state.contacts = state.contacts.filter((contact) => contact._id !== action.payload);
       });
   },
 });

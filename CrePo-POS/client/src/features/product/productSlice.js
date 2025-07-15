@@ -42,9 +42,8 @@ export const updateProduct = createAsyncThunk('products/update', async (productD
 export const deleteProduct = createAsyncThunk('products/delete', async (id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      // Pass the id back on success to identify which product to remove
-      const response = await productService.deleteProduct(id, token);
-      return response.id;
+      await productService.deleteProduct(id, token);
+      return id; // ส่ง ID กลับไปเพื่อใช้ลบ state ใน client
     } catch (error) {
       const message = (error.response?.data?.message) || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
@@ -86,7 +85,7 @@ export const productSlice = createSlice({
         );
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        // action.payload is now the id of the deleted product
+        // action.payload คือ id ของสินค้าที่ถูกลบ
         state.products = state.products.filter(
           (product) => product._id !== action.payload
         );

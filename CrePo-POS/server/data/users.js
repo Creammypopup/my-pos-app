@@ -5,9 +5,9 @@ const users = [
     name: 'Admin User',
     email: 'admin@example.com',
     username: 'admin',
-    // รหัสผ่านใหม่คือ Pop.za310
-    password: bcrypt.hashSync('Pop.za310', 10),
-    role: 'Admin', 
+    // เปลี่ยนรหัสผ่านเริ่มต้นเป็น '123456' เพื่อง่ายต่อการทดสอบ
+    password: bcrypt.hashSync('123456', 10),
+    role: 'Admin',
   },
   {
     name: 'John Doe',

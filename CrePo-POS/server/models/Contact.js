@@ -4,7 +4,9 @@ const contactSchema = mongoose.Schema({
   email: { type: String },
   phone: { type: String },
   address: { type: String },
-  type: { type: String, required: true, enum: ['Customer', 'Supplier'] },
+  taxId: { type: String }, // เพิ่มฟิลด์ เลขผู้เสียภาษี
+  branch: { type: String }, // เพิ่มฟิลด์ รหัสสาขา
+  contactType: { type: String, required: true, enum: ['customer', 'supplier'] }, // เปลี่ยนชื่อฟิลด์และค่า enum
 }, { timestamps: true });
 const Contact = mongoose.model('Contact', contactSchema);
 export default Contact;

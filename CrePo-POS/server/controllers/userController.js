@@ -7,25 +7,26 @@ import Role from '../models/Role.js';
 // @route   POST /api/users/login
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
-  // เปลี่ยนจากการรับ email เป็น username
   const { username, password } = req.body;
 
-  // ค้นหาผู้ใช้ด้วย username และดึงข้อมูล role มาด้วย
+  // 1. ค้นหาผู้ใช้ด้วย username และดึงข้อมูล role มาด้วย
   const user = await User.findOne({ username }).populate('role');
 
+  // 2. ตรวจสอบว่าเจอผู้ใช้ และรหัสผ่านตรงกันหรือไม่
   if (user && (await user.matchPassword(password))) {
+    // 3. ถ้าทุกอย่างถูกต้อง ให้ส่งข้อมูลกลับไป
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       username: user.username,
-      role: user.role, // ส่งข้อมูล role ไปกับ token
+      role: user.role, // ส่งข้อมูล role ทั้ง object กลับไป
       token: generateToken(user._id),
     });
   } else {
-    res.status(401);
-    // เปลี่ยนข้อความ error
-    throw new Error('Invalid username or password');
+    // 4. ถ้าไม่เจอผู้ใช้ หรือรหัสผ่านผิด
+    res.status(401); // 401 Unauthorized
+    throw new Error('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
   }
 });
 
@@ -39,13 +40,13 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (userExists) {
     res.status(400);
-    throw new Error('User with this email or username already exists');
+    throw new Error('มีผู้ใช้งานอีเมลหรือชื่อผู้ใช้นี้ในระบบแล้ว');
   }
 
   const role = await Role.findOne({ name: roleName });
   if (!role) {
     res.status(400);
-    throw new Error('Invalid role specified');
+    throw new Error('ไม่พบตำแหน่งที่ระบุ');
   }
 
   const user = await User.create({
@@ -61,7 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(201).json(createdUser);
   } else {
     res.status(400);
-    throw new Error('Invalid user data');
+    throw new Error('ข้อมูลผู้ใช้ไม่ถูกต้อง');
   }
 });
 
@@ -127,6 +128,11 @@ const deleteUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (user) {
+        // ป้องกันไม่ให้ลบ user 'admin'
+        if (user.username === 'admin') {
+            res.status(400);
+            throw new Error('ไม่สามารถลบบัญชีผู้ดูแลระบบหลักได้');
+        }
         await user.deleteOne();
         res.json({ message: 'User removed' });
     } else {

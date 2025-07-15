@@ -17,21 +17,23 @@ const getContactById = asyncHandler(async (req, res) => {
 });
 
 const createContact = asyncHandler(async (req, res) => {
-  const { name, email, phone, address, type } = req.body;
-  const contact = new Contact({ name, email, phone, address, type });
+  const { name, email, phone, address, taxId, branch, contactType } = req.body; // รับค่าใหม่
+  const contact = new Contact({ name, email, phone, address, taxId, branch, contactType }); //ใช้ชื่อฟิลด์ใหม่
   const createdContact = await contact.save();
   res.status(201).json(createdContact);
 });
 
 const updateContact = asyncHandler(async (req, res) => {
-  const { name, email, phone, address, type } = req.body;
+  const { name, email, phone, address, taxId, branch, contactType } = req.body; // รับค่าใหม่
   const contact = await Contact.findById(req.params.id);
   if (contact) {
     contact.name = name || contact.name;
     contact.email = email || contact.email;
     contact.phone = phone || contact.phone;
     contact.address = address || contact.address;
-    contact.type = type || contact.type;
+    contact.taxId = taxId || contact.taxId;
+    contact.branch = branch || contact.branch;
+    contact.contactType = contactType || contact.contactType; // ใช้ชื่อฟิลด์ใหม่
     const updatedContact = await contact.save();
     res.json(updatedContact);
   } else {
@@ -44,7 +46,8 @@ const deleteContact = asyncHandler(async (req, res) => {
   const contact = await Contact.findById(req.params.id);
   if (contact) {
     await contact.deleteOne();
-    res.json({ message: 'Contact removed' });
+    // ส่ง id กลับไปเพื่อให้ client update state
+    res.json({ id: req.params.id, message: 'Contact removed' });
   } else {
     res.status(404);
     throw new Error('Contact not found');
