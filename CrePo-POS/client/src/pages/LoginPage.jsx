@@ -36,7 +36,7 @@ function LoginPage() {
     <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-violet-200 via-pink-200 to-blue-200 p-4'>
       <div className='w-full max-w-md p-8 space-y-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lifted'>
         <div className='text-center'>
-          <h1 className='text-4xl font-bold text-brand-dark'>
+          <h1 className='text-4xl font-bold text-primary-text'>
             CrePo-POS
           </h1>
           <p className='mt-2 text-text-secondary'>เข้าสู่ระบบเพื่อจัดการร้านค้าของคุณ</p>
@@ -44,7 +44,7 @@ function LoginPage() {
 
         {isLoading && (
             <div className='flex justify-center items-center p-4'>
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-main"></div>
             </div>
         )}
 
@@ -62,7 +62,7 @@ function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className='w-full px-4 py-3 text-text-primary bg-white border-2 border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary focus:border-brand-primary transition'
+              className='w-full px-4 py-3 text-text-primary bg-white border-2 border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-primary-main transition'
             />
           </div>
           <div className='relative'>
@@ -78,12 +78,12 @@ function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className='w-full px-4 py-3 text-text-primary bg-white border-2 border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary focus:border-brand-primary transition'
+              className='w-full px-4 py-3 text-text-primary bg-white border-2 border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-primary-main transition'
             />
             <button
               type='button'
               onClick={() => setShowPassword(!showPassword)}
-              className='absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 top-7 hover:text-brand-primary'
+              className='absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 top-7 hover:text-primary-main'
             >
               {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </button>
@@ -91,7 +91,7 @@ function LoginPage() {
           <div>
             <button
               type='submit'
-              className='w-full flex justify-center items-center gap-2 px-4 py-4 font-bold text-white transition-all duration-300 transform bg-brand-primary rounded-xl shadow-lg hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary active:scale-95'
+              className='w-full flex justify-center items-center gap-2 px-4 py-4 font-bold text-white transition-all duration-300 transform bg-primary-dark rounded-xl shadow-lg hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-main active:scale-95'
               disabled={isLoading}
             >
               <FiLogIn />

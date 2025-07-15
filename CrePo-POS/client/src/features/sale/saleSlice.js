@@ -3,7 +3,7 @@ import saleService from './saleService';
 
 const initialState = {
   sales: [],
-  lastCreatedSale: null, // <-- Add this
+  lastCreatedSale: null, 
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -20,8 +20,18 @@ export const createSale = createAsyncThunk('sales/create', async (saleData, thun
   }
 });
 
+export const getSales = createAsyncThunk('sales/getAll', async (_, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await saleService.getSales(token);
+    } catch (error) {
+        const message = (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 export const saleSlice = createSlice({
-  name: 'sales', // <-- Changed name to 'sales' for consistency
+  name: 'sales',
   initialState,
   reducers: {
     reset: (state) => {
@@ -29,7 +39,7 @@ export const saleSlice = createSlice({
         state.isSuccess = false
         state.isError = false
         state.message = ''
-        state.lastCreatedSale = null // <-- Reset this too
+        state.lastCreatedSale = null 
     }
   },
   extraReducers: (builder) => {
@@ -39,12 +49,23 @@ export const saleSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.sales.push(action.payload);
-        state.lastCreatedSale = action.payload; // <-- Set the last sale
+        state.lastCreatedSale = action.payload;
       })
       .addCase(createSale.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(getSales.pending, (state) => { state.isLoading = true; })
+      .addCase(getSales.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.sales = action.payload;
+      })
+      .addCase(getSales.rejected, (state, action) => {
+          state.isLoading = false;
+          state.isError = true;
+          state.message = action.payload;
       });
   },
 });

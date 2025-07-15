@@ -134,7 +134,7 @@ const deleteUser = asyncHandler(async (req, res) => {
             throw new Error('ไม่สามารถลบบัญชีผู้ดูแลระบบหลักได้');
         }
         await user.deleteOne();
-        res.json({ message: 'User removed' });
+        res.json({ id: req.params.id, message: 'User removed' });
     } else {
         res.status(404);
         throw new Error('User not found');
@@ -165,6 +165,10 @@ const updateUser = asyncHandler(async (req, res) => {
         user.email = req.body.email || user.email;
         user.username = req.body.username || user.username;
         
+        if (req.body.password) {
+          user.password = req.body.password;
+        }
+
         if(req.body.role) {
             const role = await Role.findOne({ name: req.body.role });
             if (!role) {

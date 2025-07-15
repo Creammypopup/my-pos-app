@@ -25,6 +25,17 @@ const getUsers = async (token) => {
     return response.data
 }
 
+// Update user
+const updateUser = async (userData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+  const response = await axios.put(API_URL + userData._id, userData, config);
+  return response.data;
+};
+
 // Delete user
 const deleteUser = async (userId, token) => {
     const config = {
@@ -40,7 +51,8 @@ const deleteUser = async (userId, token) => {
 const userService = {
     getUsers,
     deleteUser,
-    createUser, // <-- Add this
+    createUser,
+    updateUser, // <-- Add this
 }
 
 export default userService

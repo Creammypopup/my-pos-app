@@ -16,8 +16,8 @@ import GeneralPage from './pages/settings/GeneralPage';
 import UsersPage from './pages/settings/UsersPage';
 import RolesPage from './pages/settings/RolesPage';
 import ThemePage from './pages/settings/ThemePage';
-import PlaceholderPage from './components/PlaceholderPage'; // Import หน้า Placeholder
-import SalesHistoryPage from './pages/SalesHistoryPage';
+import PlaceholderPage from './components/PlaceholderPage';
+import SalesHistoryPage from './pages/SalesHistoryPage'; // <-- แก้ไข: ใช้หน้านี้จริง
 
 // --- Import ไอคอนสำหรับหน้า Placeholder ---
 import { 
@@ -48,27 +48,37 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<MainLayout><Dashboard /></MainLayout>} />
             <Route path="/pos" element={<MainLayout><PosPage /></MainLayout>} />
-            <Route path="/products" element={<MainLayout><ProductsPage /></MainLayout>} />
-            <Route path="/contacts" element={<MainLayout><ContactsPage /></MainLayout>} />
             
-            {/* --- เพิ่ม Routes สำหรับเมนูใหม่ทั้งหมด --- */}
-            <Route path="/calendar" element={<MainLayout><PlaceholderPage title="ปฏิทิน" icon={<FaCalendarAlt />} /></MainLayout>} />
+            {/* Sales Routes */}
+            <Route path="/sales-history" element={<MainLayout><SalesHistoryPage /></MainLayout>} />
             <Route path="/quotations" element={<MainLayout><PlaceholderPage title="ใบเสนอราคา" icon={<FaFileSignature />} /></MainLayout>} />
             <Route path="/invoices" element={<MainLayout><PlaceholderPage title="ใบแจ้งหนี้/ใบกำกับ" icon={<FaFileInvoice />} /></MainLayout>} />
             <Route path="/receipts" element={<MainLayout><PlaceholderPage title="ใบเสร็จรับเงิน" icon={<FaReceipt />} /></MainLayout>} />
+
+            {/* Purchase Routes */}
             <Route path="/purchase-orders" element={<MainLayout><PlaceholderPage title="ใบสั่งซื้อ" icon={<FaShoppingCart />} /></MainLayout>} />
             <Route path="/expenses" element={<MainLayout><PlaceholderPage title="บันทึกค่าใช้จ่าย" icon={<FaWallet />} /></MainLayout>} />
             <Route path="/bills" element={<MainLayout><PlaceholderPage title="ใบรับสินค้า" icon={<FaBox />} /></MainLayout>} />
+            
+            {/* Inventory Routes */}
+            <Route path="/products" element={<MainLayout><ProductsPage /></MainLayout>} />
+            <Route path="/inventory" element={<MainLayout><PlaceholderPage title="ภาพรวมคลังสินค้า" icon={<FaWarehouse />} /></MainLayout>} />
+            <Route path="/stock-adjustments" element={<MainLayout><PlaceholderPage title="ปรับสต็อก" icon={<FaTools />} /></MainLayout>} />
+
+            {/* Other Main Routes */}
+            <Route path="/contacts" element={<MainLayout><ContactsPage /></MainLayout>} />
+            <Route path="/calendar" element={<MainLayout><PlaceholderPage title="ปฏิทิน" icon={<FaCalendarAlt />} /></MainLayout>} />
+            <Route path="/reports" element={<MainLayout><PlaceholderPage title="รายงาน" icon={<FaChartBar />} /></MainLayout>} />
+
+            {/* Employee Routes */}
             <Route path="/employees" element={<MainLayout><PlaceholderPage title="ข้อมูลพนักงาน" icon={<FaUserTie />} /></MainLayout>} />
             <Route path="/payroll" element={<MainLayout><PlaceholderPage title="เงินเดือน" icon={<FaMoneyCheckAlt />} /></MainLayout>} />
+
+            {/* Accounting Routes */}
             <Route path="/chart-of-accounts" element={<MainLayout><PlaceholderPage title="ผังบัญชี" icon={<FaBook />} /></MainLayout>} />
             <Route path="/journal" element={<MainLayout><PlaceholderPage title="สมุดรายวัน" icon={<FaChartPie />} /></MainLayout>} />
-            <Route path="/inventory" element={<MainLayout><PlaceholderPage title="คลังสินค้า" icon={<FaWarehouse />} /></MainLayout>} />
-            <Route path="/stock-adjustments" element={<MainLayout><PlaceholderPage title="ปรับสต็อก" icon={<FaTools />} /></MainLayout>} />
-            <Route path="/reports" element={<MainLayout><PlaceholderPage title="รายงาน" icon={<FaChartBar />} /></MainLayout>} />
-            <Route path="/sales-history" element={<MainLayout><SalesHistoryPage /></MainLayout>} />
-
-
+            
+            {/* Settings Route */}
             <Route path="/settings" element={<MainLayout><SettingsLayout /></MainLayout>}>
               <Route index element={<GeneralPage />} />
               <Route path="general" element={<GeneralPage />} />
