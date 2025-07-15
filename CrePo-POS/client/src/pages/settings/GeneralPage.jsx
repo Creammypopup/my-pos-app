@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 function GeneralPage() {
   const dispatch = useDispatch();
-  const { settings, isLoading, isError, message } = useSelector((state) => state.settings);
+  const { settings, isLoading, isError, message, isSuccess } = useSelector((state) => state.settings);
   
   const [formData, setFormData] = useState({
     storeName: '',
@@ -14,14 +14,7 @@ function GeneralPage() {
     storeTaxId: '',
   });
 
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-      dispatch(reset());
-    }
-    dispatch(getSettings());
-  }, [dispatch, isError, message]);
-
+  // เมื่อ component โหลด หรือ settings เปลี่ยนแปลง, ให้อัปเดต form
   useEffect(() => {
     if (settings) {
       setFormData({
@@ -32,8 +25,25 @@ function GeneralPage() {
       });
     }
   }, [settings]);
+  
+  // ดึงข้อมูล settings ครั้งแรก
+  useEffect(() => {
+    dispatch(getSettings());
+  }, [dispatch]);
 
-  const { storeName, storeAddress, storePhone, storeTaxId } = formData;
+  // จัดการ Error และ Success message
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+      dispatch(reset());
+    }
+    if (isSuccess) {
+      // isSuccess จะถูก set เป็น true หลังจากการ update สำเร็จ
+      // เราสามารถใช้มันเพื่อแสดง toast หรือทำอย่างอื่นได้
+      // แต่ตอนนี้เราจะ reset มันหลังแสดง toast
+      dispatch(reset());
+    }
+  }, [isError, isSuccess, message, dispatch]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -47,36 +57,36 @@ function GeneralPage() {
     dispatch(updateSettings(formData))
       .unwrap()
       .then(() => {
-        toast.success('บันทึกข้อมูลสำเร็จ!');
+        toast.success('บันทึกข้อมูลร้านค้าสำเร็จ!');
       })
       .catch((err) => {
-        toast.error('เกิดข้อผิดพลาดในการบันทึก');
+        toast.error(err.message || 'เกิดข้อผิดพลาดในการบันทึก');
       });
   };
 
   return (
-    <div className="p-4 md:p-8">
-      <h1 className="text-2xl font-bold text-purple-800 mb-6">ตั้งค่าทั่วไป</h1>
-      <div className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    <div className="animate-fade-in">
+      <h1 className="text-2xl font-bold text-text-primary mb-6">ตั้งค่าทั่วไป</h1>
+      <div className="max-w-2xl bg-content-bg p-8 rounded-2xl">
         <form onSubmit={onSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">ชื่อร้านค้า</label>
-            <input type="text" name="storeName" value={storeName} onChange={onChange} className="mt-1 block w-full px-3 py-2 border rounded-md" />
+            <label htmlFor="storeName" className="block text-sm font-medium text-text-secondary">ชื่อร้านค้า</label>
+            <input type="text" id="storeName" name="storeName" value={formData.storeName} onChange={onChange} className="mt-1 block w-full px-4 py-2 border border-border-color rounded-lg focus:ring-primary-main focus:border-primary-main" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">ที่อยู่</label>
-            <textarea name="storeAddress" value={storeAddress} onChange={onChange} rows="3" className="mt-1 block w-full px-3 py-2 border rounded-md"></textarea>
+            <label htmlFor="storeAddress" className="block text-sm font-medium text-text-secondary">ที่อยู่</label>
+            <textarea id="storeAddress" name="storeAddress" value={formData.storeAddress} onChange={onChange} rows="3" className="mt-1 block w-full px-4 py-2 border border-border-color rounded-lg focus:ring-primary-main focus:border-primary-main"></textarea>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">เบอร์โทรศัพท์</label>
-            <input type="text" name="storePhone" value={storePhone} onChange={onChange} className="mt-1 block w-full px-3 py-2 border rounded-md" />
+            <label htmlFor="storePhone" className="block text-sm font-medium text-text-secondary">เบอร์โทรศัพท์</label>
+            <input type="text" id="storePhone" name="storePhone" value={formData.storePhone} onChange={onChange} className="mt-1 block w-full px-4 py-2 border border-border-color rounded-lg focus:ring-primary-main focus:border-primary-main" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">เลขประจำตัวผู้เสียภาษี</label>
-            <input type="text" name="storeTaxId" value={storeTaxId} onChange={onChange} className="mt-1 block w-full px-3 py-2 border rounded-md" />
+            <label htmlFor="storeTaxId" className="block text-sm font-medium text-text-secondary">เลขประจำตัวผู้เสียภาษี</label>
+            <input type="text" id="storeTaxId" name="storeTaxId" value={formData.storeTaxId} onChange={onChange} className="mt-1 block w-full px-4 py-2 border border-border-color rounded-lg focus:ring-primary-main focus:border-primary-main" />
           </div>
-          <div className="text-right">
-            <button type="submit" disabled={isLoading} className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400">
+          <div className="text-right pt-4">
+            <button type="submit" disabled={isLoading} className="px-6 py-2.5 bg-primary-main text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark disabled:bg-gray-400 transition-colors">
               {isLoading ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}
             </button>
           </div>

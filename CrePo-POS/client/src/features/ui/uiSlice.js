@@ -1,19 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  isSidebarExpanded: true, // ค่าเริ่มต้นให้ Sidebar กางออก
+  isSidebarExpanded: true,
 };
 
 export const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
-    // Action สำหรับสลับสถานะ (พับ/กาง)
     toggleSidebar: (state) => {
       state.isSidebarExpanded = !state.isSidebarExpanded;
+    },
+    // Action ใหม่: สั่งให้ Sidebar ขยายตัวโดยเฉพาะ
+    expandSidebar: (state) => {
+      state.isSidebarExpanded = true;
     },
   },
 });
 
-export const { toggleSidebar } = uiSlice.actions;
+export const { toggleSidebar, expandSidebar } = uiSlice.actions;
 export default uiSlice.reducer;

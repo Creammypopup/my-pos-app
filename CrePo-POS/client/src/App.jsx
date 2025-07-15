@@ -10,21 +10,28 @@ import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import PosPage from './pages/PosPage';
 import ProductsPage from './pages/ProductsPage';
-import SalesHistoryPage from './pages/SalesHistoryPage';
 import ContactsPage from './pages/ContactsPage';
-import SettingsLayout from './pages/SettingsLayout'; // Layout ใหม่สำหรับหน้าตั้งค่า
+import SettingsLayout from './pages/SettingsLayout';
 import GeneralPage from './pages/settings/GeneralPage';
 import UsersPage from './pages/settings/UsersPage';
 import RolesPage from './pages/settings/RolesPage';
 import ThemePage from './pages/settings/ThemePage';
+import PlaceholderPage from './components/PlaceholderPage'; // Import หน้า Placeholder
+import SalesHistoryPage from './pages/SalesHistoryPage';
 
-// Layout หลักของแอปพลิเคชัน (เมื่อ Login แล้ว)
+// --- Import ไอคอนสำหรับหน้า Placeholder ---
+import { 
+  FaFileSignature, FaFileInvoice, FaReceipt, FaShoppingCart, FaWallet, 
+  FaBox, FaUserTie, FaMoneyCheckAlt, FaBook, FaChartPie, 
+  FaWarehouse, FaTools, FaChartBar, FaCalendarAlt
+} from 'react-icons/fa';
+
 const MainLayout = ({ children }) => (
   <div className='flex h-screen bg-bg-main'>
     <Sidebar />
     <div className='flex-1 flex flex-col overflow-hidden'>
       <Header />
-      <main className='flex-1 overflow-y-auto p-6 md:p-8'>
+      <main className='flex-1 overflow-y-auto p-4 md:p-6'>
         {children}
       </main>
     </div>
@@ -36,18 +43,32 @@ function App() {
     <>
       <Router>
         <Routes>
-          {/* หน้า Login จะไม่มี Layout อื่นๆ */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Routes ที่ต้อง Login ก่อนเข้าใช้งาน */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<MainLayout><Dashboard /></MainLayout>} />
             <Route path="/pos" element={<MainLayout><PosPage /></MainLayout>} />
             <Route path="/products" element={<MainLayout><ProductsPage /></MainLayout>} />
-            <Route path="/sales" element={<MainLayout><SalesHistoryPage /></MainLayout>} />
             <Route path="/contacts" element={<MainLayout><ContactsPage /></MainLayout>} />
             
-            {/* Nested Routes สำหรับหน้าตั้งค่า */}
+            {/* --- เพิ่ม Routes สำหรับเมนูใหม่ทั้งหมด --- */}
+            <Route path="/calendar" element={<MainLayout><PlaceholderPage title="ปฏิทิน" icon={<FaCalendarAlt />} /></MainLayout>} />
+            <Route path="/quotations" element={<MainLayout><PlaceholderPage title="ใบเสนอราคา" icon={<FaFileSignature />} /></MainLayout>} />
+            <Route path="/invoices" element={<MainLayout><PlaceholderPage title="ใบแจ้งหนี้/ใบกำกับ" icon={<FaFileInvoice />} /></MainLayout>} />
+            <Route path="/receipts" element={<MainLayout><PlaceholderPage title="ใบเสร็จรับเงิน" icon={<FaReceipt />} /></MainLayout>} />
+            <Route path="/purchase-orders" element={<MainLayout><PlaceholderPage title="ใบสั่งซื้อ" icon={<FaShoppingCart />} /></MainLayout>} />
+            <Route path="/expenses" element={<MainLayout><PlaceholderPage title="บันทึกค่าใช้จ่าย" icon={<FaWallet />} /></MainLayout>} />
+            <Route path="/bills" element={<MainLayout><PlaceholderPage title="ใบรับสินค้า" icon={<FaBox />} /></MainLayout>} />
+            <Route path="/employees" element={<MainLayout><PlaceholderPage title="ข้อมูลพนักงาน" icon={<FaUserTie />} /></MainLayout>} />
+            <Route path="/payroll" element={<MainLayout><PlaceholderPage title="เงินเดือน" icon={<FaMoneyCheckAlt />} /></MainLayout>} />
+            <Route path="/chart-of-accounts" element={<MainLayout><PlaceholderPage title="ผังบัญชี" icon={<FaBook />} /></MainLayout>} />
+            <Route path="/journal" element={<MainLayout><PlaceholderPage title="สมุดรายวัน" icon={<FaChartPie />} /></MainLayout>} />
+            <Route path="/inventory" element={<MainLayout><PlaceholderPage title="คลังสินค้า" icon={<FaWarehouse />} /></MainLayout>} />
+            <Route path="/stock-adjustments" element={<MainLayout><PlaceholderPage title="ปรับสต็อก" icon={<FaTools />} /></MainLayout>} />
+            <Route path="/reports" element={<MainLayout><PlaceholderPage title="รายงาน" icon={<FaChartBar />} /></MainLayout>} />
+            <Route path="/sales-history" element={<MainLayout><SalesHistoryPage /></MainLayout>} />
+
+
             <Route path="/settings" element={<MainLayout><SettingsLayout /></MainLayout>}>
               <Route index element={<GeneralPage />} />
               <Route path="general" element={<GeneralPage />} />
@@ -58,7 +79,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
-      <ToastContainer autoClose={3000} hideProgressBar theme="colored" />
+      <ToastContainer autoClose={3000} hideProgressBar theme="colored" position="bottom-right" />
     </>
   );
 }
