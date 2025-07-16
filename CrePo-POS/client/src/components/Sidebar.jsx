@@ -54,7 +54,7 @@ const navLinks = [
 
 const NavItemContent = ({ item, isExpanded }) => (
     <div className={`flex items-center w-full h-full ${!isExpanded ? 'justify-center' : ''}`}>
-        <div className={`flex-shrink-0 w-16 flex items-center ${isExpanded ? 'justify-start pl-4' : 'justify-center'}`}>
+        <div className={`flex-shrink-0 w-full flex items-center ${isExpanded ? 'justify-start pl-4' : 'justify-center'}`}>
             <div className="w-8 h-8 flex items-center justify-center text-xl">
                 {item.icon}
             </div>

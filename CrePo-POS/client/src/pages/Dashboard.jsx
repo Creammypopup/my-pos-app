@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getProducts } from '../features/product/productSlice';
 import { getSales } from '../features/sale/saleSlice';
-// แก้ไข: เพิ่ม FaInfoCircle เข้าไปใน import
 import { FaExclamationTriangle, FaBoxOpen, FaDollarSign, FaShoppingCart, FaChartLine, FaWallet, FaArrowUp, FaInfoCircle } from 'react-icons/fa';
 
 // Card for summary stats
