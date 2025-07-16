@@ -21,12 +21,13 @@ import RolesPage from './pages/settings/RolesPage';
 import ThemePage from './pages/settings/ThemePage';
 import PlaceholderPage from './components/PlaceholderPage';
 import SalesHistoryPage from './pages/SalesHistoryPage';
-import CalendarPage from './pages/CalendarPage'; // Import CalendarPage
+import CalendarPage from './pages/CalendarPage';
 
 import {
   FaFileSignature, FaFileInvoice, FaReceipt, FaShoppingCart, FaWallet,
   FaBox, FaUserTie, FaMoneyCheckAlt, FaBook, FaChartPie,
-  FaWarehouse, FaTools, FaChartBar, FaCalendarAlt, FaArrowCircleDown, FaArrowCircleUp, FaHandHoldingUsd, FaUndo
+  FaWarehouse, FaTools, FaChartBar, FaCalendarAlt, FaArrowCircleDown, 
+  FaArrowCircleUp, FaHandHoldingUsd, FaUndo, FaTruckLoading // <-- แก้ไข: เพิ่ม FaTruckLoading ที่นี่
 } from 'react-icons/fa';
 
 const MainLayout = ({ children }) => (
