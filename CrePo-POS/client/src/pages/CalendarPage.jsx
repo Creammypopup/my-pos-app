@@ -1,16 +1,50 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getEvents, createEvent, updateEvent, deleteEvent } from '../features/event/eventSlice';
-import { FaChevronLeft, FaChevronRight, FaPlus, FaTrash, FaRegMoon, FaBuddhist } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaPlus, FaTrash, FaGopuram } from 'react-icons/fa'; // <-- แก้ไข: เปลี่ยน FaBuddhist เป็น FaGopuram
 import { toast } from 'react-toastify';
 import { getThaiHolidays, getBuddhistHolyDays } from '../utils/thai-holidays'; 
 
 const MONTH_NAMES = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 const DAY_NAMES = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
 
-// Event Modal Component (No changes)
+// Event Modal Component (No changes here, so it's collapsed for brevity)
 const EventModal = ({ isOpen, event, onClose, onSave, onDelete }) => {
-  // ... (โค้ดส่วนนี้เหมือนเดิม)
+    const [title, setTitle] = useState('');
+    const [notes, setNotes] = useState('');
+
+    useEffect(() => {
+        if (event) {
+            setTitle(event.title || '');
+            setNotes(event.notes || '');
+        } else {
+            setTitle('');
+            setNotes('');
+        }
+    }, [event]);
+
+    if (!isOpen) return null;
+
+    const handleSave = () => {
+        onSave({ ...event, title, notes });
+    };
+    
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-1/3">
+                <h2 className="text-xl font-bold mb-4">{event?._id ? "แก้ไขกิจกรรม" : "สร้างกิจกรรมใหม่"}</h2>
+                <input type="text" placeholder="ชื่อกิจกรรม" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 border rounded mb-2" />
+                <textarea placeholder="รายละเอียด" value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full p-2 border rounded mb-4" />
+                <div className="flex justify-between">
+                    <div>{event?._id && (<button onClick={() => onDelete(event._id)} className="bg-red-500 text-white px-4 py-2 rounded"><FaTrash /></button>)}</div>
+                    <div>
+                        <button onClick={onClose} className="bg-gray-300 px-4 py-2 rounded mr-2">ยกเลิก</button>
+                        <button onClick={handleSave} className="bg-purple-500 text-white px-4 py-2 rounded">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 function CalendarPage() {
@@ -28,11 +62,7 @@ function CalendarPage() {
         }
     }, [dispatch]);
 
-    useEffect(() => {
-        // ... (โค้ดส่วน Notification scheduler เหมือนเดิม)
-    }, [events]);
-
-    const allMonthEvents = useMemo(() => {
+     const allMonthEvents = useMemo(() => {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
       const holidays = getThaiHolidays(year).filter(h => new Date(h.date).getMonth() === month);
@@ -54,15 +84,26 @@ function CalendarPage() {
     const handleNextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
 
     const openModal = (day, event = null) => {
-        // ... (โค้ดส่วนนี้เหมือนเดิม)
+        setSelectedDay(day);
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+        setSelectedEvent(event ? event : { start: date, end: date, allDay: true });
+        setIsModalOpen(true);
     };
 
-    const handleSaveEvent = useCallback((e) => {
-        // ... (โค้ดส่วนนี้เหมือนเดิม)
-    }, [dispatch, selectedEvent, selectedDay]);
+    const handleSaveEvent = useCallback((eventData) => {
+        const { _id, ...dataToSave } = eventData;
+        if (_id) {
+            dispatch(updateEvent(eventData));
+        } else {
+            const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), selectedDay);
+            dispatch(createEvent({ ...dataToSave, start: date, end: date, allDay: true }));
+        }
+        setIsModalOpen(false);
+    }, [dispatch, currentDate, selectedDay]);
     
     const handleDeleteEvent = useCallback((id) => {
-        // ... (โค้ดส่วนนี้เหมือนเดิม)
+        dispatch(deleteEvent(id));
+        setIsModalOpen(false);
     }, [dispatch]);
 
     const renderCalendar = () => {
@@ -92,7 +133,7 @@ function CalendarPage() {
                       <div className={`font-bold ${isToday ? 'text-white bg-primary-dark rounded-full w-7 h-7 flex items-center justify-center' : 'text-gray-600'}`}>{day}</div>
                       {holyDay && (
                         <div title={holyDay.name} className="text-yellow-500">
-                          <FaBuddhist />
+                          <FaGopuram /> {/* <-- แก้ไข: เปลี่ยน FaBuddhist เป็น FaGopuram */}
                         </div>
                       )}
                     </div>
@@ -112,7 +153,7 @@ function CalendarPage() {
 
     return (
         <div className="flex gap-4 p-4 h-[calc(100vh-100px)]">
-            {/* ... (EventModal remains the same) ... */}
+             <EventModal isOpen={isModalOpen} event={selectedEvent} onClose={() => setIsModalOpen(false)} onSave={handleSaveEvent} onDelete={handleDeleteEvent}/>
             <div className="flex-grow bg-white rounded-2xl shadow-lg p-4 flex flex-col">
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-4">
