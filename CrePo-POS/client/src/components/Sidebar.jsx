@@ -6,7 +6,7 @@ import { logout } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import {
   FaTachometerAlt, FaCashRegister, FaWarehouse, FaUsers, FaChartBar, FaCog, FaSignOutAlt,
-  FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt, FaHistory, FaFileContract, FaBoxOpen, FaTruckLoading, FaHandHoldingUsd, FaUndo, FaArrowCircleDown, FaArrowCircleUp, FaReceipt
+  FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt, FaHistory, FaFileContract, FaBoxOpen, FaTruckLoading, FaHandHoldingUsd, FaUndo, FaArrowCircleDown, FaArrowCircleUp, FaReceipt, FaFileInvoice
 } from 'react-icons/fa';
 
 const navLinks = [
@@ -53,11 +53,13 @@ const navLinks = [
 ];
 
 const NavItemContent = ({ item, isExpanded }) => (
-    <div className="flex items-center w-full h-full">
-        <div className="w-24 h-full flex items-center justify-center text-xl shrink-0">
-            {item.icon}
+    <div className={`flex items-center w-full h-full ${!isExpanded ? 'justify-center' : ''}`}>
+        <div className={`flex-shrink-0 w-16 flex items-center ${isExpanded ? 'justify-start pl-4' : 'justify-center'}`}>
+            <div className="w-8 h-8 flex items-center justify-center text-xl">
+                {item.icon}
+            </div>
         </div>
-        <span className={`-ml-10 whitespace-nowrap transition-opacity duration-200 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
+        <span className={`whitespace-nowrap transition-opacity duration-200 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
             {item.text}
         </span>
     </div>
