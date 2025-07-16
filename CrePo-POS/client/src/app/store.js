@@ -6,7 +6,8 @@ import userReducer from '../features/user/userSlice';
 import contactReducer from '../features/contact/contactSlice';
 import saleReducer from '../features/sale/saleSlice';
 import settingReducer from '../features/setting/settingSlice';
-import uiReducer from '../features/ui/uiSlice'; // <-- 1. Import เข้ามา
+import uiReducer from '../features/ui/uiSlice';
+import eventReducer from '../features/event/eventSlice'; // Import event reducer
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     contacts: contactReducer,
     sales: saleReducer,
     settings: settingReducer,
-    ui: uiReducer, // <-- 2. เพิ่ม uiReducer เข้าไปใน store
+    ui: uiReducer,
+    events: eventReducer, // Add event reducer
   },
 });
