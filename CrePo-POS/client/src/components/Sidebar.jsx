@@ -9,6 +9,7 @@ import {
   FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt, FaHistory, FaFileContract, FaBoxOpen, FaTruckLoading, FaHandHoldingUsd, FaUndo, FaArrowCircleDown, FaArrowCircleUp, FaReceipt, FaFileInvoice
 } from 'react-icons/fa';
 
+// ... (navLinks array remains the same)
 const navLinks = [
   { to: '/', icon: <FaTachometerAlt />, text: 'ภาพรวม', permission: 'dashboard-view' },
   { to: '/pos', icon: <FaCashRegister />, text: 'ขายหน้าร้าน', permission: 'pos-access' },
@@ -53,18 +54,15 @@ const navLinks = [
 ];
 
 const NavItemContent = ({ item, isExpanded }) => (
-    <div className={`flex items-center w-full h-full ${!isExpanded ? 'justify-center' : ''}`}>
-        <div className={`flex-shrink-0 w-full flex items-center ${isExpanded ? 'justify-start pl-4' : 'justify-center'}`}>
-            <div className="w-8 h-8 flex items-center justify-center text-xl">
-                {item.icon}
-            </div>
+    <div className={`flex items-center w-full h-full ${isExpanded ? 'pl-4' : 'justify-center'}`}>
+        <div className="w-8 h-8 flex items-center justify-center text-xl shrink-0">
+            {item.icon}
         </div>
-        <span className={`whitespace-nowrap transition-opacity duration-200 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
+        <span className={`ml-4 whitespace-nowrap transition-opacity duration-200 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
             {item.text}
         </span>
     </div>
 );
-
 
 const NavItem = ({ item, isExpanded, userPermissions }) => {
   const location = useLocation();
@@ -141,14 +139,14 @@ function Sidebar() {
   return (
     <aside className={`flex flex-col bg-sidebar-bg border-r border-purple-200/50 p-4 transition-all duration-300 ease-in-out ${isSidebarExpanded ? 'w-64' : 'w-24'}`}>
       <div className="flex items-center justify-between mb-6 h-14">
-        {isSidebarExpanded ? (
+        {isSidebarExpanded && (
           <div className="flex items-center overflow-hidden transition-all duration-300 pl-4">
              <div className="bg-primary-main p-3 rounded-2xl shadow-lg">
                 <FaFileInvoiceDollar className="text-white text-xl"/>
              </div>
              <span className="text-xl font-bold text-primary-text ml-3">CrePo-POS</span>
           </div>
-        ) : ( <div className="w-16"></div> )}
+        )}
         <button onClick={() => dispatch(toggleSidebar())} className="p-2 text-text-secondary hover:text-primary-text hover:bg-white/50 rounded-lg ml-auto">
           <FaBars size={20}/>
         </button>
@@ -164,7 +162,7 @@ function Sidebar() {
 
       <div className="border-t border-purple-200/80 pt-3 mt-3">
          <button onClick={onLogout} className={`flex items-center w-full h-12 text-sm font-medium transition-colors duration-200 text-text-secondary hover:bg-accent-red/10 hover:text-accent-red rounded-xl`}>
-           <NavItemContent item={{icon: <FaSignOutAlt />, text: "ออกจากระบบ"}} isExpanded={isSidebarExpanded} />
+           <NavItemContent item={{icon: <FaSignOutAlt />, text: "ออกจากระบบ"}} isExpanded={isExpanded} />
          </button>
       </div>
     </aside>
