@@ -20,6 +20,8 @@ const UserModal = ({ isOpen, onClose, onSave, user, setUser, roles }) => {
                 <form onSubmit={onSave} className="space-y-4">
                     <input name="name" value={user.name || ''} onChange={handleChange} placeholder="ชื่อ-สกุล" required className="w-full px-4 py-2 border rounded-lg" />
                     <input name="username" value={user.username || ''} onChange={handleChange} placeholder="ชื่อผู้ใช้ (สำหรับ Login)" required className="w-full px-4 py-2 border rounded-lg" />
+                    {/* เพิ่มช่องกรอกอีเมล */}
+                    <input name="email" type="email" value={user.email || ''} onChange={handleChange} placeholder="อีเมล (สำหรับรับการแจ้งเตือน)" className="w-full px-4 py-2 border rounded-lg" />
                     <input name="password" type="password" onChange={handleChange} placeholder={user._id ? "กรอกเพื่อเปลี่ยนรหัสผ่าน" : "รหัสผ่าน"} required={!user._id} className="w-full px-4 py-2 border rounded-lg" />
                     
                     <label className="block text-sm font-medium text-gray-700">ตำแหน่ง</label>
@@ -66,7 +68,7 @@ function UsersPage() {
             setCurrentUser({ ...user, role: user.role?._id });
         } else {
             const defaultRole = roles[0] || null;
-            setCurrentUser({ role: defaultRole?._id });
+            setCurrentUser({ role: defaultRole?._id, email: '' }); // เพิ่มค่าเริ่มต้น email
         }
         setIsModalOpen(true);
     };
@@ -113,7 +115,8 @@ function UsersPage() {
                             <tr>
                                 <th className="p-4">ชื่อ</th>
                                 <th className="p-4">Username</th>
-                                <th className="p-4">บทบาท</th>
+                                <th className="p-4">อีเมล</th> {/* เพิ่มคอลัมน์อีเมล */}
+                                <th className="p-4">ตำแหน่ง</th>
                                 <th className="p-4 text-center">จัดการ</th>
                             </tr>
                         </thead>
@@ -122,10 +125,11 @@ function UsersPage() {
                                 <tr key={user._id} className="border-b">
                                     <td className="p-4">{user.name}</td>
                                     <td className="p-4">{user.username}</td>
+                                    <td className="p-4">{user.email || '-'}</td> {/* แสดงอีเมล */}
                                     <td className="p-4">{user.role?.name}</td>
                                     <td className="p-4 text-center">
                                         <button onClick={() => openModal(user)} className="text-blue-500 p-2"><FaEdit /></button>
-                                        <button onClick={() => handleDelete(user)} className="text-red-500 p-2 ml-2" disabled={user._id === loggedInUser._id}><FaTrash /></button>
+                                        <button onClick={() => handleDelete(user)} className="text-red-500 p-2 ml-2" disabled={user._id === loggedInUser._id || user.username === 'admin'}><FaTrash /></button>
                                     </td>
                                 </tr>
                             ))}

@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Event from '../models/Event.js';
+import sendNotification from '../services/notificationService.js'; // <-- เพิ่มการนำเข้า
 
 // @desc    Fetch all events for a user
 // @route   GET /api/events
@@ -30,6 +31,13 @@ const createEvent = asyncHandler(async (req, res) => {
   });
 
   const createdEvent = await event.save();
+  
+  // --- ส่วนที่เพิ่มการแจ้งเตือน ---
+  const startDate = new Date(start).toLocaleDateString('th-TH');
+  const message = `📅 กิจกรรมใหม่: ${title} วันที่: ${startDate}`;
+  sendNotification(message);
+  // --- จบส่วนแจ้งเตือน ---
+
   res.status(201).json(createdEvent);
 });
 
@@ -44,7 +52,6 @@ const updateEvent = asyncHandler(async (req, res) => {
     throw new Error('Event not found');
   }
 
-  // Check for user
   if (event.user.toString() !== req.user.id) {
     res.status(401);
     throw new Error('User not authorized');
@@ -53,6 +60,12 @@ const updateEvent = asyncHandler(async (req, res) => {
   const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
+  
+  // --- ส่วนที่เพิ่มการแจ้งเตือน ---
+  const startDate = new Date(updatedEvent.start).toLocaleDateString('th-TH');
+  const message = `✨ อัปเดตกิจกรรม: ${updatedEvent.title} วันที่: ${startDate}`;
+  sendNotification(message);
+  // --- จบส่วนแจ้งเตือน ---
 
   res.json(updatedEvent);
 });
@@ -68,13 +81,18 @@ const deleteEvent = asyncHandler(async (req, res) => {
     throw new Error('Event not found');
   }
 
-  // Check for user
   if (event.user.toString() !== req.user.id) {
     res.status(401);
     throw new Error('User not authorized');
   }
-
+  
+  const deletedTitle = event.title;
   await event.deleteOne();
+  
+  // --- ส่วนที่เพิ่มการแจ้งเตือน ---
+  const message = `🗑️ ลบกิจกรรม: ${deletedTitle}`;
+  sendNotification(message);
+  // --- จบส่วนแจ้งเตือน ---
 
   res.json({ id: req.params.id });
 });

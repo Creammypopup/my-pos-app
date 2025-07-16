@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Sale from '../models/Sale.js';
 import Product from '../models/Product.js';
 import mongoose from 'mongoose';
+import sendNotification from '../services/notificationService.js'; // <-- เพิ่มการนำเข้า
 
 const createSale = asyncHandler(async (req, res) => {
   const { items, customer, subtotal, discount, total, paymentMethod } = req.body;
@@ -20,9 +21,8 @@ const createSale = asyncHandler(async (req, res) => {
       if (!product) {
         throw new Error(`ไม่พบสินค้า: ${item.name}`);
       }
-
-      const conversionRate = item.unit.conversionRate || 1;
-      const quantityToDeduct = item.qty * conversionRate;
+      
+      const quantityToDeduct = item.qty * (product.units.find(u => u.name === item.unitName)?.conversionRate || 1);
       
       if (product.productType === 'standard') {
         if (product.quantity < quantityToDeduct) {
@@ -30,6 +30,14 @@ const createSale = asyncHandler(async (req, res) => {
         }
         product.quantity -= quantityToDeduct;
         await product.save({ session });
+
+        // --- จุดที่เพิ่มการแจ้งเตือน ---
+        if (product.quantity <= product.lowStockThreshold && product.lowStockThreshold > 0) {
+          const message = `⚠️ สินค้าใกล้หมด! '${product.name}' เหลือเพียง ${product.quantity} ${product.units[0].name || 'ชิ้น'}`;
+          sendNotification(message); // ส่งการแจ้งเตือน
+        }
+        // --- จบส่วนแจ้งเตือน ---
+
       } else if (product.productType === 'bundle') {
         for (const bundledItem of product.bundledItems) {
             const subProduct = await Product.findById(bundledItem.product).session(session);
@@ -42,6 +50,13 @@ const createSale = asyncHandler(async (req, res) => {
             }
             subProduct.quantity -= subProductQtyToDeduct;
             await subProduct.save({session});
+
+             // --- จุดที่เพิ่มการแจ้งเตือนสำหรับสินค้าในเซ็ต ---
+            if (subProduct.quantity <= subProduct.lowStockThreshold && subProduct.lowStockThreshold > 0) {
+              const message = `⚠️ สินค้า(ในเซ็ต)ใกล้หมด! '${subProduct.name}' เหลือเพียง ${subProduct.quantity} ${subProduct.units[0].name || 'ชิ้น'}`;
+              sendNotification(message); // ส่งการแจ้งเตือน
+            }
+            // --- จบส่วนแจ้งเตือน ---
         }
       }
     }
