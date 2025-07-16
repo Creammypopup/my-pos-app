@@ -3,6 +3,8 @@
 
 const holidays = [
     { month: 1, day: 1, name: "วันขึ้นปีใหม่" },
+    { month: 1, day: 16, name: "วันครู" },
+    { month: 2, day: 10, name: "วันตรุษจีน" }, // Example, date varies
     { month: 2, day: 24, name: "วันมาฆบูชา" }, // Example, date varies
     { month: 4, day: 6, name: "วันจักรี" },
     { month: 4, day: 13, name: "วันสงกรานต์" },
@@ -18,8 +20,10 @@ const holidays = [
     { month: 8, day: 12, name: "วันแม่แห่งชาติ" },
     { month: 10, day: 13, name: "วันคล้ายวันสวรรคต ร.9" },
     { month: 10, day: 23, name: "วันปิยมหาราช" },
+    { month: 10, day: 31, name: "วันฮาโลวีน" },
     { month: 12, day: 5, name: "วันพ่อแห่งชาติ" },
     { month: 12, day: 10, name: "วันรัฐธรรมนูญ" },
+    { month: 12, day: 25, name: "วันคริสต์มาส" },
     { month: 12, day: 31, name: "วันสิ้นปี" },
 ];
 

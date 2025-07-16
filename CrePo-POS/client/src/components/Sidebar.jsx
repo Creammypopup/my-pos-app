@@ -9,7 +9,6 @@ import {
   FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt, FaHistory, FaFileContract, FaBoxOpen, FaTruckLoading, FaHandHoldingUsd, FaUndo, FaArrowCircleDown, FaArrowCircleUp, FaReceipt, FaFileInvoice
 } from 'react-icons/fa';
 
-// ... (navLinks array remains the same)
 const navLinks = [
   { to: '/', icon: <FaTachometerAlt />, text: 'ภาพรวม', permission: 'dashboard-view' },
   { to: '/pos', icon: <FaCashRegister />, text: 'ขายหน้าร้าน', permission: 'pos-access' },
@@ -63,6 +62,7 @@ const NavItemContent = ({ item, isExpanded }) => (
         </span>
     </div>
 );
+
 
 const NavItem = ({ item, isExpanded, userPermissions }) => {
   const location = useLocation();
@@ -162,7 +162,7 @@ function Sidebar() {
 
       <div className="border-t border-purple-200/80 pt-3 mt-3">
          <button onClick={onLogout} className={`flex items-center w-full h-12 text-sm font-medium transition-colors duration-200 text-text-secondary hover:bg-accent-red/10 hover:text-accent-red rounded-xl`}>
-           <NavItemContent item={{icon: <FaSignOutAlt />, text: "ออกจากระบบ"}} isExpanded={isExpanded} />
+           <NavItemContent item={{icon: <FaSignOutAlt />, text: "ออกจากระบบ"}} isExpanded={isSidebarExpanded} />
          </button>
       </div>
     </aside>

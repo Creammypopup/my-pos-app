@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getEvents, createEvent, updateEvent, deleteEvent } from '../features/event/eventSlice';
 import { FaChevronLeft, FaChevronRight, FaPlus, FaTrash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { getThaiHolidays } from '../utils/thai-holidays'; // Import holidays
+import { getThaiHolidays } from '../utils/thai-holidays'; 
+
+const MONTH_NAMES = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+const DAY_NAMES = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
 
 // ... (EventModal component remains the same)
 
