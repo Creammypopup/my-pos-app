@@ -9,6 +9,7 @@ import {
   FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt, FaHistory, FaFileContract, FaBoxOpen, FaTruckLoading, FaHandHoldingUsd, FaUndo, FaArrowCircleDown, FaArrowCircleUp, FaReceipt, FaFileInvoice
 } from 'react-icons/fa';
 
+// ... (navLinks array remains the same)
 const navLinks = [
   { to: '/', icon: <FaTachometerAlt />, text: 'ภาพรวม', permission: 'dashboard-view' },
   { to: '/pos', icon: <FaCashRegister />, text: 'ขายหน้าร้าน', permission: 'pos-access' },
