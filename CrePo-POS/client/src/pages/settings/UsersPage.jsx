@@ -12,13 +12,7 @@ const UserModal = ({ isOpen, onClose, onSave, user, setUser, roles }) => {
         const { name, value } = e.target;
         setUser(prev => ({ ...prev, [name]: value }));
     };
-
-    const handleRoleChange = (e) => {
-        const roleId = e.target.value;
-        const roleName = roles.find(r => r._id === roleId)?.name;
-        setUser(prev => ({ ...prev, role: { _id: roleId, name: roleName } }));
-    };
-
+    
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
             <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md m-4">
@@ -29,7 +23,7 @@ const UserModal = ({ isOpen, onClose, onSave, user, setUser, roles }) => {
                     <input name="password" type="password" onChange={handleChange} placeholder={user._id ? "กรอกเพื่อเปลี่ยนรหัสผ่าน" : "รหัสผ่าน"} required={!user._id} className="w-full px-4 py-2 border rounded-lg" />
                     
                     <label className="block text-sm font-medium text-gray-700">ตำแหน่ง</label>
-                    <select name="role" value={user.role?._id || ''} onChange={handleRoleChange} className="w-full px-4 py-2 border rounded-lg">
+                    <select name="role" value={user.role || ''} onChange={(e) => setUser(prev => ({...prev, role: e.target.value}))} className="w-full px-4 py-2 border rounded-lg" required>
                         <option value="" disabled>-- เลือกตำแหน่ง --</option>
                         {roles.map(role => (
                             <option key={role._id} value={role._id}>{role.name}</option>
@@ -52,7 +46,6 @@ function UsersPage() {
     const { roles } = useSelector((state) => state.roles);
     const { user: loggedInUser } = useSelector((state) => state.auth);
 
-
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentUser, setCurrentUser] = useState({});
 
@@ -70,17 +63,17 @@ function UsersPage() {
 
     const openModal = (user = null) => {
         if (user) {
-            setCurrentUser(JSON.parse(JSON.stringify(user)));
+            setCurrentUser({ ...user, role: user.role?._id });
         } else {
-            const defaultRole = roles.find(r => r.name === 'Sales') || roles[0];
-            setCurrentUser({ role: defaultRole });
+            const defaultRole = roles[0] || null;
+            setCurrentUser({ role: defaultRole?._id });
         }
         setIsModalOpen(true);
     };
 
     const handleSave = useCallback((e) => {
         e.preventDefault();
-        const userData = { ...currentUser, role: currentUser.role?.name };
+        const userData = { ...currentUser };
         
         const action = currentUser._id ? updateUser(userData) : createUser(userData);
 
@@ -91,7 +84,6 @@ function UsersPage() {
             })
             .catch(err => toast.error(err.message || 'เกิดข้อผิดพลาด'));
     }, [dispatch, currentUser]);
-
 
     const handleDelete = (userToDelete) => {
         if (userToDelete._id === loggedInUser._id) {
@@ -110,8 +102,8 @@ function UsersPage() {
             <UserModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSave} user={currentUser} setUser={setCurrentUser} roles={roles} />
             <div className="p-4 md:p-8">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold text-purple-800">จัดการผู้ใช้</h1>
-                    <button onClick={() => openModal()} className="flex items-center bg-purple-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-purple-600">
+                    <h1 className="text-3xl font-bold text-primary-text">จัดการผู้ใช้</h1>
+                    <button onClick={() => openModal()} className="flex items-center bg-primary-main text-white px-4 py-2 rounded-lg shadow-md hover:bg-primary-dark">
                         <FaPlus className="mr-2" /> เพิ่มผู้ใช้
                     </button>
                 </div>

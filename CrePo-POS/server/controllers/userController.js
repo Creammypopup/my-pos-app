@@ -8,54 +8,40 @@ import Role from '../models/Role.js';
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
-
-  // 1. ค้นหาผู้ใช้ด้วย username และดึงข้อมูล role มาด้วย
-  const user = await User.findOne({ username }).populate('role');
-
-  // 2. ตรวจสอบว่าเจอผู้ใช้ และรหัสผ่านตรงกันหรือไม่
+  const user = await User.findOne({ username }).populate('role', 'name permissions');
   if (user && (await user.matchPassword(password))) {
-    // 3. ถ้าทุกอย่างถูกต้อง ให้ส่งข้อมูลกลับไป
     res.json({
       _id: user._id,
       name: user.name,
-      email: user.email,
       username: user.username,
-      role: user.role, // ส่งข้อมูล role ทั้ง object กลับไป
+      role: user.role,
       token: generateToken(user._id),
     });
   } else {
-    // 4. ถ้าไม่เจอผู้ใช้ หรือรหัสผ่านผิด
-    res.status(401); // 401 Unauthorized
+    res.status(401);
     throw new Error('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
   }
 });
 
-// @desc    Register a new user
+// @desc    Register a new user (by Admin)
 // @route   POST /api/users
 // @access  Private/Admin
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, username, role: roleName } = req.body;
+  const { name, username, password, role: roleId } = req.body;
 
-  const userExists = await User.findOne({ $or: [{ email }, { username }] });
-
+  const userExists = await User.findOne({ username });
   if (userExists) {
     res.status(400);
-    throw new Error('มีผู้ใช้งานอีเมลหรือชื่อผู้ใช้นี้ในระบบแล้ว');
+    throw new Error('ชื่อผู้ใช้นี้มีในระบบแล้ว');
   }
 
-  const role = await Role.findOne({ name: roleName });
+  const role = await Role.findById(roleId);
   if (!role) {
     res.status(400);
     throw new Error('ไม่พบตำแหน่งที่ระบุ');
   }
 
-  const user = await User.create({
-    name,
-    email,
-    password,
-    username,
-    role: role._id,
-  });
+  const user = await User.create({ name, username, password, role: role._id });
 
   if (user) {
     const createdUser = await User.findById(user._id).select('-password').populate('role');
@@ -66,13 +52,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-
 // @desc    Get user profile
 // @route   GET /api/users/profile
 // @access  Private
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).select('-password').populate('role');
-
+  const user = await User.findById(req.user._id).select('-password').populate('role', 'name permissions');
   if (user) {
     res.json(user);
   } else {
@@ -86,34 +70,28 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
-
     if (user) {
         user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
         user.username = req.body.username || user.username;
         if (req.body.password) {
             user.password = req.body.password;
         }
-
         const updatedUser = await user.save();
         const populatedUser = await User.findById(updatedUser._id).select('-password').populate('role');
-
         res.json({
             _id: populatedUser._id,
             name: populatedUser.name,
-            email: populatedUser.email,
             username: populatedUser.username,
             role: populatedUser.role,
             token: generateToken(populatedUser._id),
         });
-
     } else {
         res.status(404);
         throw new Error('User not found');
     }
 });
 
-// @desc    Get all users
+// @desc    Get all users (for Admin)
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
@@ -121,14 +99,12 @@ const getUsers = asyncHandler(async (req, res) => {
   res.json(users);
 });
 
-// @desc    Delete user
+// @desc    Delete user (for Admin)
 // @route   DELETE /api/users/:id
 // @access  Private/Admin
 const deleteUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
-
     if (user) {
-        // ป้องกันไม่ให้ลบ user 'admin'
         if (user.username === 'admin') {
             res.status(400);
             throw new Error('ไม่สามารถลบบัญชีผู้ดูแลระบบหลักได้');
@@ -141,7 +117,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Get user by ID
+// @desc    Get user by ID (for Admin)
 // @route   GET /api/users/:id
 // @access  Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
@@ -154,23 +130,21 @@ const getUserById = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Update user
+// @desc    Update user (for Admin)
 // @route   PUT /api/users/:id
 // @access  Private/Admin
 const updateUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
-
     if (user) {
         user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
         user.username = req.body.username || user.username;
         
         if (req.body.password) {
           user.password = req.body.password;
         }
 
-        if(req.body.role) {
-            const role = await Role.findOne({ name: req.body.role });
+        if (req.body.role) {
+            const role = await Role.findById(req.body.role);
             if (!role) {
                 res.status(400);
                 throw new Error('Invalid role specified');
