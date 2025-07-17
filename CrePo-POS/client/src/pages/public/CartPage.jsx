@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { updateCartQuantity, removeFromCart } from '../../features/cart/cartSlice';
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash, FaArrowLeft } from 'react-icons/fa';
 
 const CartPage = () => {
     const navigate = useNavigate();
@@ -21,26 +21,30 @@ const CartPage = () => {
                 <h1 className="text-3xl font-bold text-primary-text mb-6">ตะกร้าสินค้า</h1>
                 {cartItems.length === 0 ? (
                     <div className="text-center bg-white p-8 rounded-2xl shadow-main">
-                        <p className="text-text-secondary">ตะกร้าของคุณว่างเปล่า</p>
-                        <Link to="/store" className="mt-4 inline-block bg-primary-main text-white px-6 py-2 rounded-lg">กลับไปเลือกซื้อสินค้า</Link>
+                        <p className="text-text-secondary text-lg">ตะกร้าของคุณว่างเปล่า</p>
+                        <Link to="/store" className="mt-4 inline-flex items-center gap-2 bg-primary-main text-white px-6 py-2 rounded-lg hover:bg-primary-dark">
+                           <FaArrowLeft/> กลับไปเลือกซื้อสินค้า
+                        </Link>
                     </div>
                 ) : (
                     <div className="bg-white p-6 rounded-2xl shadow-main">
-                        {cartItems.map(item => (
-                            <div key={item.cartId} className="flex items-center py-4 border-b">
-                                <div className="w-16 h-16 bg-gray-100 rounded-lg mr-4"></div>
-                                <div className="flex-grow">
-                                    <h2 className="font-bold">{item.name}</h2>
-                                    <p className="text-sm text-text-secondary">{item.unitName}</p>
+                        <div className="space-y-4">
+                            {cartItems.map(item => (
+                                <div key={item.cartId} className="flex items-center py-4 border-b">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-lg mr-4 flex items-center justify-center text-2xl text-purple-300 font-bold">{item.name.charAt(0)}</div>
+                                    <div className="flex-grow">
+                                        <h2 className="font-bold text-lg">{item.name}</h2>
+                                        <p className="text-sm text-text-secondary">{item.unitName} - {item.price.toLocaleString()} ฿</p>
+                                    </div>
+                                    <input type="number" min="1" value={item.qty} onChange={(e) => dispatch(updateCartQuantity({cartId: item.cartId, qty: Number(e.target.value)}))} className="w-16 text-center border rounded-lg mx-4 py-1" />
+                                    <p className="w-24 text-right font-semibold text-lg">{(item.qty * item.price).toLocaleString()} ฿</p>
+                                    <button onClick={() => dispatch(removeFromCart(item.cartId))} className="ml-4 text-red-500 hover:text-red-700 p-2"><FaTrash /></button>
                                 </div>
-                                <input type="number" value={item.qty} onChange={(e) => dispatch(updateCartQuantity({cartId: item.cartId, qty: Number(e.target.value)}))} className="w-16 text-center border rounded-lg mx-4" />
-                                <p className="w-24 text-right font-semibold">{(item.qty * item.price).toLocaleString()} ฿</p>
-                                <button onClick={() => dispatch(removeFromCart(item.cartId))} className="ml-4 text-red-500"><FaTrash /></button>
-                            </div>
-                        ))}
-                        <div className="mt-6 text-right">
-                            <p className="text-2xl font-bold">ยอดรวม: <span className="text-primary-dark">{subtotal.toLocaleString()} ฿</span></p>
-                            <button onClick={handleCheckout} className="mt-4 bg-primary-dark text-white px-8 py-3 rounded-lg font-bold text-lg">ดำเนินการต่อ</button>
+                            ))}
+                        </div>
+                        <div className="mt-6 text-right space-y-4">
+                            <p className="text-2xl font-bold">ยอดรวม (ยังไม่รวมค่าส่ง): <span className="text-primary-dark">{subtotal.toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</span></p>
+                            <button onClick={handleCheckout} className="bg-primary-dark text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-primary-text shadow-lg">ดำเนินการต่อ</button>
                         </div>
                     </div>
                 )}
