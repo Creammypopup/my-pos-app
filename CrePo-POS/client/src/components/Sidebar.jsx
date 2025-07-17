@@ -6,10 +6,10 @@ import { logout } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import {
   FaTachometerAlt, FaCashRegister, FaWarehouse, FaUsers, FaChartBar, FaCog, FaSignOutAlt,
-  FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt, FaHistory, FaFileContract, FaBoxOpen, FaTruckLoading, FaHandHoldingUsd, FaUndo, FaArrowCircleDown, FaArrowCircleUp, FaReceipt, FaFileInvoice
+  FaFileInvoiceDollar, FaChevronDown, FaShoppingCart, FaWallet, FaUserTie, FaBook, FaBars, FaCalendarAlt, FaHistory, FaFileContract, FaBoxOpen, FaTruckLoading, FaHandHoldingUsd, FaUndo, FaArrowCircleDown, FaArrowCircleUp, FaReceipt, FaFileInvoice, FaMoneyBillWave, FaMoneyCheckAlt, FaClipboardList
 } from 'react-icons/fa';
 
-// ... (navLinks array remains the same)
+
 const navLinks = [
   { to: '/', icon: <FaTachometerAlt />, text: 'ภาพรวม', permission: 'dashboard-view' },
   { to: '/pos', icon: <FaCashRegister />, text: 'ขายหน้าร้าน', permission: 'pos-access' },
@@ -20,6 +20,7 @@ const navLinks = [
     icon: <FaFileInvoiceDollar />,
     permission: 'sales-docs-view',
     children: [
+      { to: '/customer-orders', text: 'ออเดอร์ลูกค้า', permission: 'sales-docs-view', icon: <FaClipboardList /> },
       { to: '/quotations', text: 'ใบเสนอราคา', permission: 'quotations-manage', icon: <FaFileContract /> },
       { to: '/billing-notes', text: 'ใบวางบิล/ใบแจ้งหนี้', permission: 'invoices-manage', icon: <FaFileInvoice /> },
       { to: '/delivery-notes', text: 'ใบส่งของ', permission: 'invoices-manage', icon: <FaTruckLoading /> },
@@ -35,6 +36,15 @@ const navLinks = [
       { to: '/purchase-orders', text: 'ใบสั่งซื้อ', permission: 'purchase-orders-manage', icon: <FaHandHoldingUsd /> },
       { to: '/expenses', text: 'บันทึกค่าใช้จ่าย', permission: 'expenses-manage', icon: <FaWallet /> },
       { to: '/bills', text: 'ใบรับสินค้า', permission: 'purchase-docs-view', icon: <FaBoxOpen /> },
+    ]
+  },
+  {
+    text: 'บัญชี',
+    icon: <FaMoneyCheckAlt />,
+    permission: 'accounting-view',
+    children: [
+      { to: '/receivables', text: 'รายการลูกหนี้', permission: 'accounting-view', icon: <FaMoneyBillWave /> },
+      { to: '/chart-of-accounts', text: 'ผังบัญชี', permission: 'chart-of-accounts-manage', icon: <FaBook /> },
     ]
   },
   {

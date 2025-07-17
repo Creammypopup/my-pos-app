@@ -14,6 +14,19 @@ function SalesHistoryPage() {
         return [...sales].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }, [sales]);
 
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case 'paid':
+                return <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">ชำระแล้ว</span>;
+            case 'unpaid':
+                return <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">ค้างชำระ</span>;
+            case 'partial':
+                return <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">ชำระบางส่วน</span>;
+            default:
+                return <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">ไม่ระบุ</span>;
+        }
+    };
+
     return (
         <div className="p-4 md:p-8 bg-bg-main min-h-screen">
             <div className="max-w-7xl mx-auto">
@@ -41,7 +54,7 @@ function SalesHistoryPage() {
                                             <td className="p-4 text-gray-500">{new Date(sale.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                                             <td className="p-4 text-right font-semibold">{Number(sale.total).toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</td>
                                             <td className="p-4 text-center">
-                                                <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">ชำระแล้ว</span>
+                                                {getStatusBadge(sale.paymentStatus)}
                                             </td>
                                         </tr>
                                     ))

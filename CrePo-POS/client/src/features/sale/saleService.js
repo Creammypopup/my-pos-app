@@ -14,9 +14,19 @@ const getSales = async (token) => {
     return response.data;
 }
 
+// --- ฟังก์ชันใหม่ ---
+const addPaymentToSale = async (data, token) => {
+    const { saleId, ...paymentData } = data;
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await axios.post(`${API_URL}${saleId}/payments`, paymentData, config);
+    return response.data;
+};
+// --------------------
+
 const saleService = {
   createSale,
   getSales,
+  addPaymentToSale, // <-- เพิ่ม
 };
 
 export default saleService;

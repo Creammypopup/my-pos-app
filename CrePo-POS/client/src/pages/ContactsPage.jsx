@@ -2,14 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getContacts, createContact, updateContact, deleteContact, reset } from '../features/contact/contactSlice';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import ContactModal from '../components/ContactModal'; // <-- Import the new component
+import ContactModal from '../components/ContactModal';
 
 function ContactsPage() {
   const dispatch = useDispatch();
   const { contacts, isLoading } = useSelector((state) => state.contacts);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentContact, setCurrentContact] = useState({ contactType: 'customer' });
+  const [currentContact, setCurrentContact] = useState({ contactType: 'customer', creditLimit: 0 });
   const [activeTab, setActiveTab] = useState('all');
 
   useEffect(() => {
@@ -39,7 +39,10 @@ function ContactsPage() {
   };
 
   const openCreateModal = () => {
-    setCurrentContact({ contactType: activeTab === 'supplier' ? 'supplier' : 'customer' });
+    setCurrentContact({ 
+      contactType: activeTab === 'supplier' ? 'supplier' : 'customer',
+      creditLimit: 0
+    });
     setIsModalOpen(true);
   };
   
@@ -87,7 +90,7 @@ function ContactsPage() {
                     <th className="p-4 text-gray-600 font-semibold">ชื่อ</th>
                     <th className="p-4 text-gray-600 font-semibold">ประเภท</th>
                     <th className="p-4 text-gray-600 font-semibold">เบอร์โทรศัพท์</th>
-                    <th className="p-4 text-gray-600 font-semibold">อีเมล</th>
+                    <th className="p-4 text-gray-600 font-semibold text-right">ยอดค้างชำระ</th>
                     <th className="p-4 text-gray-600 font-semibold text-center">จัดการ</th>
                   </tr>
                 </thead>
@@ -100,7 +103,9 @@ function ContactsPage() {
                         <td className="p-4 text-gray-800">{contact.name}</td>
                         <td className="p-4 text-gray-500">{contact.contactType === 'customer' ? 'ลูกค้า' : 'ผู้จัดจำหน่าย'}</td>
                         <td className="p-4 text-gray-700">{contact.phone}</td>
-                        <td className="p-4 text-gray-700">{contact.email}</td>
+                        <td className={`p-4 text-right font-semibold ${contact.currentBalance > 0 ? 'text-red-500' : 'text-gray-500'}`}>
+                            {contact.contactType === 'customer' ? (contact.currentBalance || 0).toLocaleString('th-TH', { style: 'currency', currency: 'THB' }) : '-'}
+                        </td>
                         <td className="p-4 text-center">
                           <button onClick={() => openEditModal(contact)} className="text-blue-500 hover:text-blue-700 p-2"><FaEdit /></button>
                           <button onClick={() => handleDeleteClick(contact._id)} className="text-red-500 hover:text-red-700 p-2 ml-2"><FaTrash /></button>

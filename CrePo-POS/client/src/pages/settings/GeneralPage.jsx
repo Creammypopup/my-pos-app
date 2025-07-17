@@ -11,7 +11,7 @@ function GeneralPage() {
     storeName: '',
     storeAddress: '',
     storePhone: '',
-    storeTaxId: '',
+    storeTaxId: '', // <-- นำกลับมา
   });
 
   useEffect(() => {
@@ -24,7 +24,7 @@ function GeneralPage() {
         storeName: settings.storeName || '',
         storeAddress: settings.storeAddress || '',
         storePhone: settings.storePhone || '',
-        storeTaxId: settings.storeTaxId || '',
+        storeTaxId: settings.storeTaxId || '', // <-- นำกลับมา
       });
     }
   }, [settings]);
@@ -49,8 +49,6 @@ function GeneralPage() {
       .unwrap()
       .then(() => {
         toast.success('บันทึกข้อมูลร้านค้าสำเร็จ!');
-        // After successful update, fetch the latest settings again
-        // This will update the redux store and cause the Header to re-render
         dispatch(getSettings());
       })
       .catch((err) => {

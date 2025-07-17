@@ -4,9 +4,15 @@ const contactSchema = mongoose.Schema({
   email: { type: String },
   phone: { type: String },
   address: { type: String },
-  taxId: { type: String }, // เพิ่มฟิลด์ เลขผู้เสียภาษี
-  branch: { type: String }, // เพิ่มฟิลด์ รหัสสาขา
-  contactType: { type: String, required: true, enum: ['customer', 'supplier'] }, // เปลี่ยนชื่อฟิลด์และค่า enum
+  taxId: { type: String }, 
+  branch: { type: String }, 
+  contactType: { type: String, required: true, enum: ['customer', 'supplier'] },
+  
+  // --- Fields for Credit Control ---
+  creditLimit: { type: Number, default: 0 },
+  currentBalance: { type: Number, default: 0 }, // ยอดหนี้คงค้าง
+  // --- End of Credit Control ---
+
 }, { timestamps: true });
 const Contact = mongoose.model('Contact', contactSchema);
 export default Contact;

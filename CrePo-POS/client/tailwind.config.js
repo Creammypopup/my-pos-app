@@ -22,8 +22,8 @@ export default {
         'primary-dark': '#A855F7',    
         'primary-text': '#581C87',    
 
-        'bg-main': '#F5F3FF',        
-        'sidebar-bg': '#F1F0FF', // สีพื้นหลัง Sidebar ที่เข้มขึ้นเล็กน้อย
+        'bg-main': '#F5F3FF',
+        'sidebar-bg': '#F1EEFE', // <-- แก้ไขสีตรงนี้ให้เข้มขึ้นเล็กน้อย
         'content-bg': '#FFFFFF',     
 
         'accent-pink': '#F472B6',

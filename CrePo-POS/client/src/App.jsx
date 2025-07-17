@@ -22,12 +22,19 @@ import ThemePage from './pages/settings/ThemePage';
 import PlaceholderPage from './components/PlaceholderPage';
 import SalesHistoryPage from './pages/SalesHistoryPage';
 import CalendarPage from './pages/CalendarPage';
+import ReceiptsPage from './pages/ReceiptsPage';
+import CustomerOrdersPage from './pages/CustomerOrdersPage';
+import ReceivablesPage from './pages/accounting/ReceivablesPage';
+import StorefrontPage from './pages/public/StorefrontPage';
+import CartPage from './pages/public/CartPage';
+import CheckoutPage from './pages/public/CheckoutPage';
+import OrderSuccessPage from './pages/public/OrderSuccessPage';
+import CustomerDisplayPage from './pages/CustomerDisplayPage';
 
 import {
   FaFileSignature, FaFileInvoice, FaReceipt, FaShoppingCart, FaWallet,
-  FaBox, FaUserTie, FaMoneyCheckAlt, FaBook, FaChartPie,
-  FaWarehouse, FaTools, FaChartBar, FaCalendarAlt, FaArrowCircleDown, 
-  FaArrowCircleUp, FaHandHoldingUsd, FaUndo, FaTruckLoading // <-- แก้ไข: เพิ่ม FaTruckLoading ที่นี่
+  FaBox, FaBook, FaChartBar, FaCalendarAlt, FaArrowCircleDown, 
+  FaArrowCircleUp, FaHandHoldingUsd, FaUndo, FaTruckLoading
 } from 'react-icons/fa';
 
 const MainLayout = ({ children }) => (
@@ -62,23 +69,34 @@ function App() {
     <>
       <Router>
         <Routes>
+          {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/store" element={<StorefrontPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-success" element={<OrderSuccessPage />} />
+          <Route path="/customer-display" element={<CustomerDisplayPage />} />
 
+          {/* Private Routes */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<MainLayout><PermissionRoute permission="dashboard-view"><Dashboard /></PermissionRoute></MainLayout>} />
             <Route path="/pos" element={<MainLayout><PermissionRoute permission="pos-access"><PosPage /></PermissionRoute></MainLayout>} />
             <Route path="/calendar" element={<MainLayout><CalendarPage /></MainLayout>} />
-            
             <Route path="/sales-history" element={<MainLayout><PermissionRoute permission="sales-docs-view"><SalesHistoryPage /></PermissionRoute></MainLayout>} />
+            
+            <Route path="/customer-orders" element={<MainLayout><PermissionRoute permission="sales-docs-view"><CustomerOrdersPage /></PermissionRoute></MainLayout>} />
             <Route path="/quotations" element={<MainLayout><PermissionRoute permission="quotations-manage"><PlaceholderPage title="ใบเสนอราคา" icon={<FaFileSignature />} /></PermissionRoute></MainLayout>} />
             <Route path="/billing-notes" element={<MainLayout><PermissionRoute permission="invoices-manage"><PlaceholderPage title="ใบวางบิล/ใบแจ้งหนี้" icon={<FaFileInvoice />} /></PermissionRoute></MainLayout>} />
             <Route path="/delivery-notes" element={<MainLayout><PermissionRoute permission="invoices-manage"><PlaceholderPage title="ใบส่งของ" icon={<FaTruckLoading />} /></PermissionRoute></MainLayout>} />
-            <Route path="/receipts" element={<MainLayout><PermissionRoute permission="receipts-manage"><PlaceholderPage title="ใบเสร็จรับเงิน" icon={<FaReceipt />} /></PermissionRoute></MainLayout>} />
+            <Route path="/receipts" element={<MainLayout><PermissionRoute permission="receipts-manage"><ReceiptsPage /></PermissionRoute></MainLayout>} />
             <Route path="/credit-notes" element={<MainLayout><PermissionRoute permission="invoices-manage"><PlaceholderPage title="ใบลดหนี้/คืนสินค้า" icon={<FaUndo />} /></PermissionRoute></MainLayout>} />
             
             <Route path="/purchase-orders" element={<MainLayout><PermissionRoute permission="purchase-orders-manage"><PlaceholderPage title="ใบสั่งซื้อ" icon={<FaHandHoldingUsd />} /></PermissionRoute></MainLayout>} />
             <Route path="/expenses" element={<MainLayout><PermissionRoute permission="expenses-manage"><PlaceholderPage title="บันทึกค่าใช้จ่าย" icon={<FaWallet />} /></PermissionRoute></MainLayout>} />
             <Route path="/bills" element={<MainLayout><PermissionRoute permission="purchase-docs-view"><PlaceholderPage title="ใบรับสินค้า" icon={<FaBox />} /></PermissionRoute></MainLayout>} />
+
+            <Route path="/receivables" element={<MainLayout><PermissionRoute permission="accounting-view"><ReceivablesPage /></PermissionRoute></MainLayout>} />
+            <Route path="/chart-of-accounts" element={<MainLayout><PermissionRoute permission="chart-of-accounts-manage"><PlaceholderPage title="ผังบัญชี" icon={<FaBook />} /></PermissionRoute></MainLayout>} />
             
             <Route path="/products" element={<MainLayout><PermissionRoute permission="products-view"><ProductsPage /></PermissionRoute></MainLayout>} />
             <Route path="/inventory" element={<MainLayout><PermissionRoute permission="stock-adjustments-manage"><PlaceholderPage title="ภาพรวมคลังสินค้า" icon={<FaWarehouse />} /></PermissionRoute></MainLayout>} />
@@ -88,7 +106,6 @@ function App() {
             <Route path="/contacts" element={<MainLayout><PermissionRoute permission="contacts-manage"><ContactsPage /></PermissionRoute></MainLayout>} />
             <Route path="/reports" element={<MainLayout><PermissionRoute permission="reports-view"><PlaceholderPage title="รายงาน" icon={<FaChartBar />} /></PermissionRoute></MainLayout>} />
 
-            
             <Route path="/settings" element={<MainLayout><PermissionRoute permission="settings-access"><SettingsLayout /></PermissionRoute></MainLayout>}>
               <Route index element={<PermissionRoute permission="general-settings-manage"><GeneralPage /></PermissionRoute>} />
               <Route path="general" element={<PermissionRoute permission="general-settings-manage"><GeneralPage /></PermissionRoute>} />
