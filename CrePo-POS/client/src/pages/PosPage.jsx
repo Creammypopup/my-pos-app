@@ -96,7 +96,7 @@ const ReceiptModal = ({ isOpen, onClose, sale, settings, user }) => {
       document.body.innerHTML = `<div style="font-family: 'monospace'; font-size: 12px; width: 280px; padding: 10px;">${printContents}</div>`;
       window.print();
       document.body.innerHTML = originalContents;
-      window.location.reload(); // Reload to restore the original state
+      window.location.reload();
     };
   
     return (
@@ -151,7 +151,7 @@ const ReceiptModal = ({ isOpen, onClose, sale, settings, user }) => {
 // Summary Modal
 const SummaryModal = ({ isOpen, onClose, onConfirm, cart, totals }) => {
     if (!isOpen) return null;
-    const promptPayQr = `|000201010212306100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-0115${totals.total.toFixed(2)}5802TH6304`;
+    const promptPayQr = `000201010212306100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-0115${totals.total.toFixed(2)}5802TH6304`;
   
     return (
       <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50 p-4">
@@ -421,9 +421,9 @@ function PosPage() {
                         <div id="scanner-view" className="w-full rounded-lg overflow-hidden shadow-lg animate-fade-in"></div>
                     )}
                     <div className="flex-grow bg-white p-4 rounded-2xl shadow-inner flex flex-col">
-                        <div className="flex border-b mb-2">
+                        <div className="flex border-b mb-2 overflow-x-auto">
                             {categories.map(cat => (
-                                <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 text-sm font-semibold ${activeCategory === cat ? 'border-b-2 border-primary-dark text-primary-dark' : 'text-text-secondary'}`}>
+                                <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 text-sm font-semibold whitespace-nowrap ${activeCategory === cat ? 'border-b-2 border-primary-dark text-primary-dark' : 'text-text-secondary'}`}>
                                     {cat}
                                 </button>
                             ))}
